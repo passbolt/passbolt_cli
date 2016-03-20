@@ -1,0 +1,35 @@
+{
+  "name": "passbolt_cli",
+  "version": "0.0.1",
+  "description": "A command line client for passbolt",
+  "main": "index.js",
+  "scripts": {
+    "test": "passbolt --help"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://www.github.com/passbolt/passbolt_cli"
+  },
+  "keywords": [
+    "passbolt",
+    "password",
+    "manager",
+    "teams"
+  ],
+  "bin": {
+    "passbolt": "./index.js"
+  },
+  "author": "contact@passbolt.com",
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "commander": "^2.9.0",
+    "gpg": "^0.4.0",
+    "header-case-normalizer": "^1.0.3",
+    "jssha": "^2.0.2",
+    "prompt": "^1.0.0",
+    "request": "^2.69.0",
+    "validator": "^5.1.0",
+    "xregexp": "^3.1.0",
+    "y18n": "^3.2.1"
+  }
+}

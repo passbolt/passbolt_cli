@@ -1,0 +1,5 @@
+{
+  "test": "le test",
+  "The username should be a valid email address": "L'identifiant utilisateur se doit d'etre une addresse email valide.",
+  "a username is required": "a username is required"
+}
