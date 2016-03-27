@@ -1,8 +1,1 @@
-{
-  "a username is required": "a username is required",
-  "The username should be a valid email address": "The username should be a valid email address",
-  "That version of GPGAuth is not supported. (undefined)": "That version of GPGAuth is not supported. (undefined)",
-  "x-gpgauth-authenticated should be set to false during the verify stage": "x-gpgauth-authenticated should be set to false during the verify stage",
-  "x-gpgauth-progress should be set to stage0 during the verify stage": "x-gpgauth-progress should be set to stage0 during the verify stage",
-  "x-gpgauth-verify-response should be set during the verify stage": "x-gpgauth-verify-response should be set during the verify stage"
-}
+{}

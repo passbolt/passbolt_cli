@@ -7,6 +7,7 @@
 "use strict";
 
 var program = require('commander');
+var User = require('./app/models/user.js');
 var CliController = require('./app/controllers/cliController.js');
 var GpgAuthController = require('./app/controllers/gpgAuthController.js');
 
@@ -14,16 +15,19 @@ var GpgAuthController = require('./app/controllers/gpgAuthController.js');
  * Index.js
  */
 program
-  .arguments('<password>')
-  .option('-u, --username <username>', 'The user to authenticate as')
-  .action(function(password) {
-
-    //var file = file;
-    //var cli = new CliController();
-    //cli.promptUsername();
-
-    var gpgAuth = new GpgAuthController();
-    gpgAuth.verify();
-
-  })
+  .option('-u, --fingerprint <fingerprint>', 'The user key fingerprint to authenticate with')
   .parse(process.argv);
+
+var gpgAuth;
+if(program.fingerprint !== undefined) {
+  var user = new User({
+    privateKey : {
+      fingerprint: program.fingerprint
+    }
+  });
+  gpgAuth = new GpgAuthController(user);
+} else {
+  gpgAuth = new GpgAuthController();
+}
+
+gpgAuth.verify();

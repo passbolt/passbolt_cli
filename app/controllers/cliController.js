@@ -49,7 +49,7 @@ class CliController extends Controller {
     ];
     var _this = this;
     this.prompt.get(properties, function (err, result) {
-      if (err) { return _this.onPromptError(err); }
+      if (err instanceof Error) { return _this.onPromptError(err); }
       console.log('  Result: ' + result.username);
     });
   };
@@ -58,13 +58,11 @@ class CliController extends Controller {
    * On prompt error handler
    * This event can happen for example if a user press ctrl + c while prompted
    * @param err Error
-   * @returns int 1 exit code
    */
   onPromptError (err) {
     // if the user cancel the input
     // we do nothing
-    console.log(err.message);
-    return 1;
+    this.error(err);
   };
 
 }
