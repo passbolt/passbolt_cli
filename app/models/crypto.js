@@ -1,8 +1,10 @@
 "use strict";
 
+var Gpg = require('gpg');
 var XRegExp = require('xregexp');
 var jsSHA = require('jssha');
 var randomBytes = require('crypto').randomBytes;
+var StringDecoder = require('string_decoder').StringDecoder;
 
 class Crypto {
 
@@ -57,6 +59,28 @@ class Crypto {
     }
   }
 
+  /**
+   * Encrypt a msg with a given key
+   * @param recipient string public key fingerprint
+   * @param msg string message to encrypt
+   * @returns {Promise}
+   */
+  static encrypt(recipient, msg) {
+    var promise = new Promise( function (resolve, reject) {
+      var p = {
+        resolve: resolve,
+        reject: reject
+      };
+      Gpg.encrypt(msg, ['--armor','--recipient', recipient], function(error, buffer) {
+        if (error != undefined) {
+          return p.reject(error);
+        }
+        var decoder = new StringDecoder('utf8');
+        return p.resolve(decoder.write(buffer));
+      });
+    });
+    return promise;
+  }
 }
 
 module.exports = Crypto;
