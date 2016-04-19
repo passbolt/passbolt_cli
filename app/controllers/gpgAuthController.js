@@ -20,7 +20,7 @@ class GpgAuthController extends CliController {
    * Constructor
    */
   constructor (program, argv) {
-    super();
+    super(program, argv);
 
     if(program !== undefined && program.fingerprint !== undefined) {
       this.user = new User({
@@ -35,7 +35,14 @@ class GpgAuthController extends CliController {
     if(program !== undefined && program.domain === undefined) {
       this.domain = new Domain();
     } else {
-      this.domain = domain;
+      this.domain = program.domain;
+    }
+
+    if(program !== undefined && program.passphrase === undefined) {
+      //this.domain = new Domain();
+      console.log('@todo prompt for passphrase when needed?');
+    } else {
+      this.passphrase = program.passphrase;
     }
 
     var baseUrl = this.domain.url + '/auth/';
@@ -44,13 +51,65 @@ class GpgAuthController extends CliController {
   }
 
   /**
+   * GPGAuth Verify Step
+   */
+  verify() {
+    var _this = this;
+    this._generateVerifyToken();
+
+    return Crypto
+      .encrypt(this.user.privateKey.fingerprint, this.token)
+      .then(function(encrypted) {
+        return _this.post({
+          url: _this.URL_VERIFY,
+          form: {
+            'data[gpg_auth][keyid]' : _this.user.privateKey.fingerprint,
+            'data[gpg_auth][server_verify_token]' : encrypted
+          }
+        });
+      })
+      .then(function(results) {
+        return _this._onVerifyResponse(results);
+      })
+      .catch(function(err) {
+        throw err;
+      });
+  }
+
+  /**
+   * Perform GPG Auth Login
+   */
+  login() {
+    var _this = this;
+    this.log(i18n.__('Authenticating with key: ') + this.user.privateKey.fingerprint);
+
+    return _this.verify()
+      .then(function(response){
+        return _this._stage1();
+      })
+      .then(function(userAuthToken) {
+        return _this._stage2(userAuthToken);
+      })
+      .then(function(results){
+        console.log(results.headers['x-gpgauth-authenticated']);
+      })
+      .catch(function(err) {
+        _this.error(err);
+      });
+  }
+
+  /* ==================================================
+   * Controller helpers
+   * ==================================================
+   */
+  /**
    * Generate random verification token to be decrypted by the server
    * @returns {string}
    */
-  generateVerifyToken () {
-   var t = new GpgAuthToken();
-   this.token = t.token;
-   return this.token;
+  _generateVerifyToken () {
+    var t = new GpgAuthToken();
+    this.token = t.token;
+    return this.token;
   }
 
   /**
@@ -59,7 +118,7 @@ class GpgAuthController extends CliController {
    * @param deferred promise
    * @returns true or promise if reject
    */
-  serverResponseHealthCheck(step, response) {
+  _serverResponseHealthCheck(step, response) {
     var error_msg;
 
     // Check if the HTTP status is OK
@@ -69,8 +128,8 @@ class GpgAuthController extends CliController {
     }
 
     // Check if there is GPGAuth error flagged by the server
-    if(response.headers['X-GPGAuth-Error'] != undefined) {
-      error_msg = i18n.__('The server rejected the verification request.') + response.headers['X-GPGAuth-Debug'];
+    if(response.headers['x-gpgauth-error'] != undefined) {
+      error_msg = i18n.__('The server rejected the verification request.') + response.headers['x-gpgauth-debug'];
       return new Error(error_msg);
     }
 
@@ -85,60 +144,13 @@ class GpgAuthController extends CliController {
   };
 
   /**
-   * GPGAuth Verify Step
-   *
-   */
-  verify() {
-    var _this = this;
-    this.generateVerifyToken();
-
-    return Crypto
-      .encrypt(this.user.privateKey.fingerprint, this.token)
-      .then(function(encrypted) {
-        return _this.post({
-          url: _this.URL_VERIFY,
-          form: {
-            'data[gpg_auth][keyid]' : _this.user.privateKey.fingerprint,
-            'data[gpg_auth][server_verify_token]' : encrypted
-          }
-        });
-      })
-      .then(function(results) {
-        return _this.onVerifyResponse(results);
-      })
-      .catch(function(err) {
-        console.log('catch');
-        throw err;
-      });
-  }
-
-  /**
-   * Perform GPG Auth Login
-   */
-  login() {
-    var _this = this;
-    this.log(i18n.__('Authenticating with key: ') + this.user.privateKey.fingerprint);
-
-    return _this.verify()
-      .then(function(response){
-
-        console.log(response.headers);
-        return true;
-      })
-      .catch(function(err) {
-        _this.error(err);
-      });
-  }
-
-  /**
    * Process a verify step response
    * @param response
    * @returns {*}
    */
-  onVerifyResponse(response) {
-
+  _onVerifyResponse(response) {
     // check headers
-    var r = this.serverResponseHealthCheck('verify', response);
+    var r = this._serverResponseHealthCheck('verify', response);
     if(r instanceof Error) {
       throw new Error(r.message);
     }
@@ -152,6 +164,74 @@ class GpgAuthController extends CliController {
       throw new Error(i18n.__('Error: The server was unable to identify. GPGAuth tokens do not match.'));
     }
     return response;
+  }
+
+  /**
+   * GPGAuth stage 1
+   * @returns {Promise.<T>}
+   * @private
+   */
+  _stage1() {
+    var _this = this;
+    return _this.post({
+      url: _this.URL_LOGIN,
+      form: {
+        'data[gpg_auth][keyid]': _this.user.privateKey.fingerprint
+      }
+    })
+    .then(function(response) {
+      // perform protocol health checks on server response
+      var r = _this._serverResponseHealthCheck('login', response);
+      if(r instanceof Error) {
+        throw new Error(r.message);
+      }
+      // cleanup the encrypted auth string
+      var compat = require('../lib/phpjs.js');
+      var encryptedAuthToken = compat.stripslashes(compat.urldecode(response.headers['x-gpgauth-user-auth-token']));
+
+      // decrypt
+      return Crypto.decrypt(encryptedAuthToken, ['--passphrase', _this.passphrase]);
+    })
+    .then(function(userAuthToken) {
+      // validate decrypted token
+      var r = GpgAuthToken.validate('token', userAuthToken);
+      if(r instanceof Error) {
+        throw new Error(r.message);
+      }
+      // stage 1 success
+      return userAuthToken;
+    })
+    .catch(function(err) {
+      _this.log(err);
+      throw err;
+    });
+  }
+
+  /**
+   * Stage 2 - Send back the decrypted token and get a cookie
+   * @param userAuthToken
+   * @returns {Promise.<T>}
+   * @private
+   */
+  _stage2 (userAuthToken) {
+    var _this = this;
+    return _this.post({
+      url: _this.URL_LOGIN,
+      form: {
+        'data[gpg_auth][keyid]': _this.user.privateKey.fingerprint,
+        'data[gpg_auth][user_token_result]' : userAuthToken
+      }
+    }).then(function(response){
+      // perform protocol health checks on server response
+      var r = _this._serverResponseHealthCheck('stage2', response);
+      if(r instanceof Error) {
+        throw new Error(r.message);
+      }
+      return response;
+    }).catch(function(err) {
+      _this.log(err);
+      throw err;
+    });
   }
 }
 

@@ -81,6 +81,28 @@ class Crypto {
     });
     return promise;
   }
+
+
+  /**
+   * Decrypt a msg with a given key
+   * @param msg string message to decrypt
+   * @returns {Promise}
+   */
+  static decrypt(msg, options) {
+    var promise = new Promise( function (resolve, reject) {
+      var p = {
+        resolve: resolve,
+        reject: reject
+      };
+      Gpg.decrypt(msg, options, function(error, decrypted) {
+        if (error != undefined) {
+          return p.reject(error);
+        }
+        return p.resolve(decrypted.toString('utf8'));
+      });
+    });
+    return promise;
+  }
 }
 
 module.exports = Crypto;
