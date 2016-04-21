@@ -26,3 +26,6 @@ Create an account on a passbolt instance
 Export your key during the setup
 Import it your GPG keyring
 Configure your fingerprint in config.json (or provide it as parameter)
+
+
+This is a work in progress, bear with us! :)
