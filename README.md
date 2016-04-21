@@ -21,12 +21,13 @@ Credits: https://www.passbolt.com/credits
 How to get started?
 ===============================
 
-Copy the repository
-Install npm dependencies
-Create an account on a passbolt instance
-Export your key during the setup
-Import it your GPG keyring
-Configure your fingerprint in config.json (or provide it as parameter)
-
+- Copy the repository
+- Install npm dependencies
+- Link the application
+- Create an account on a passbolt instance
+- Export your key during the setup
+- Import it your GPG keyring
+- Configure your fingerprint in config.json (or provide it as parameter)
+- Try 'passbolt --help'
 
 This is a work in progress, bear with us! :)
