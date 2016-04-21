@@ -16,7 +16,13 @@ Copyright 2016 Bolt Softwares Private Limited
 Licence: http://www.gnu.org/licenses/agpl-3.0.en.html
 Credits: https://www.passbolt.com/credits
 
-Coming soon..
+
+How to get started?
 ===============================
 
-...
+Copy the repository
+Install npm dependencies
+Create an account on a passbolt instance
+Export your key during the setup
+Import it your GPG keyring
+Configure your fingerprint in config.json (or provide it as parameter)

@@ -8,47 +8,74 @@
 var i18n = require('../models/i18n.js');
 
 class Controller {
+
+  /**
+   * Controller constructor
+   * @param options
+   */
   constructor() {
     this._request = require('request');
   }
 
-  log(msg) {
-    console.log(msg);
-  }
-
-  error(error) {
-    if(error instanceof Error) {
-      this.log(error.message);
-    }
-    else if(typeof error === 'string') {
-      this.log(error);
-    }
-    else {
-      this.log(error);
-    }
-    process.exit(1);
-  }
-
-  success(msg) {
-    this.log(msg);
-    process.exit(0);
-  }
-
+  /**
+   * HTTP POST request
+   * @param options
+   * @returns {Promise}
+   */
   post(options) {
     var _this = this;
+    var result = undefined;
     return new Promise(function (resolve, reject) {
       try {
         _this._request
           .post(options)
           .on('response', function (response) {
-            resolve(response);
+            result = response;
+          })
+          .on('data', function(chunk) {
+            result.body += chunk;
+          })
+          .on('end', function() {
+            resolve(result);
           })
           .on('error', function (error) {
-            var err = new Error(i18n.__('Error: could not connect to ') + options.url)
+            var err = new Error(i18n.__('Error: could not connect to ') + options.url);
             reject(err);
           })
       } catch(err) {
-        var err = new Error(i18n.__('Error: could not connect to ') + options.url)
+        var err = new Error(i18n.__('Error: could not connect to ') + options.url);
+        reject(err);
+      }
+    });
+  }
+
+  /**
+   * HTTP GET request
+   * @param options
+   * @returns {Promise}
+   */
+  get(options) {
+    var _this = this;
+    var result = undefined;
+    return new Promise(function (resolve, reject) {
+      try {
+        _this._request
+          .get(options)
+          .on('response', function (response) {
+            result = response;
+          })
+          .on('data', function(chunk) {
+            result.body += chunk;
+          })
+          .on('end', function() {
+            resolve(result);
+          })
+          .on('error', function (error) {
+            var err = new Error(i18n.__('Error: could not connect to ') + options.url);
+            reject(err);
+          })
+      } catch(err) {
+        var err = new Error(i18n.__('Error: could not connect to ') + options.url);
         reject(err);
       }
     });

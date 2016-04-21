@@ -31,6 +31,12 @@ class GpgAuthHeader extends Model {
     }
 
     switch(stage) {
+      case 'logout' :
+        if(typeof headers['x-gpgauth-authenticated'] !== 'string' ||
+          headers['x-gpgauth-authenticated'] != 'false') {
+          return new Error(i18n.__('x-gpgauth-authenticated should be set to false during the logout stage'));
+        }
+      break;
       case 'verify' :
       case 'stage0' :
         if(typeof headers['x-gpgauth-authenticated'] !== 'string' ||

@@ -6,6 +6,7 @@
  */
 "use strict";
 
+//var FileCookieStore = require('tough-cookie-filestore');
 var Domain = require('../models/domain.js');
 var Crypto = require('../models/crypto.js');
 var User = require('../models/user.js');
@@ -21,33 +22,17 @@ class GpgAuthController extends CliController {
    */
   constructor (program, argv) {
     super(program, argv);
+    this._parseProgramArg(program, argv);
 
-    if(program !== undefined && program.fingerprint !== undefined) {
-      this.user = new User({
-        privateKey : {
-          fingerprint: program.fingerprint
-        }
-      });
-    } else {
-      this.user = new User();
-    }
-
-    if(program !== undefined && program.domain === undefined) {
-      this.domain = new Domain();
-    } else {
-      this.domain = program.domain;
-    }
-
-    if(program !== undefined && program.passphrase === undefined) {
-      //this.domain = new Domain();
-      console.log('@todo prompt for passphrase when needed?');
-    } else {
-      this.passphrase = program.passphrase;
-    }
-
+    // URLs
     var baseUrl = this.domain.url + '/auth/';
     this.URL_VERIFY = baseUrl + 'verify.json';
     this.URL_LOGIN = baseUrl + 'login.json';
+    this.URL_LOGOUT = baseUrl + 'logout';
+
+    // Session cookie
+    this.cookieJar = this._request.jar();
+    this._request.defaults({jar:this.cookieJar});
   }
 
   /**
@@ -81,17 +66,45 @@ class GpgAuthController extends CliController {
    */
   login() {
     var _this = this;
-    this.log(i18n.__('Authenticating with key: ') + this.user.privateKey.fingerprint);
+    _this.log('GPGAuth login start with fingerprint ' + _this.user.privateKey.fingerprint, 'verbose');
 
+    // Stage 0 - verify the server identity
     return _this.verify()
-      .then(function(response){
+      .then(function(response) {
+        // Stage 1 - get a token to prove identity
+        _this.log('Verify OK', 'verbose');
         return _this._stage1();
       })
       .then(function(userAuthToken) {
+        // Stage 2 - send back the decrypted token
+        _this.log('Stage 1 OK', 'verbose');
         return _this._stage2(userAuthToken);
       })
-      .then(function(results){
-        console.log(results.headers['x-gpgauth-authenticated']);
+      .then(function(response) {
+        // Final stage - set the cookie and done!
+        _this.log('Stage 2 OK', 'verbose');
+        var cookie = _this._request.cookie(response.headers['set-cookie'][0]);
+        _this.cookieJar.setCookie(cookie, _this.domain.url);
+        return true;
+      })
+      .catch(function(err) {
+        _this.log('Error during login', 'verbose');
+        _this.error(err);
+      });
+  }
+
+  /**
+   * Perform GPG Auth Logout
+   */
+  logout() {
+    var _this = this;
+    return _this.get({
+        url: _this.URL_LOGOUT
+      })
+      .then(function(response) {
+        _this._serverResponseHealthCheck('logout', response);
+        _this.log('Logout OK', 'verbose');
+        return true;
       })
       .catch(function(err) {
         _this.error(err);
@@ -99,9 +112,40 @@ class GpgAuthController extends CliController {
   }
 
   /* ==================================================
-   * Controller helpers
+   *  Controller helpers
    * ==================================================
    */
+  /**
+   * Parse program arguments
+   * @param program
+   * @param argv
+   * @private
+   */
+  _parseProgramArg(program, argv) {
+    if(program !== undefined && program.fingerprint !== undefined) {
+      this.user = new User({
+        privateKey : {
+          fingerprint: program.fingerprint
+        }
+      });
+    } else {
+      this.user = new User();
+    }
+
+    if(program !== undefined && program.domain === undefined) {
+      this.domain = new Domain();
+    } else {
+      this.domain = program.domain;
+    }
+
+    if(program !== undefined && program.passphrase === undefined) {
+      // if no passphrase is given but is needed
+      // a gpg prompt will be triggered by gpg itself
+    } else {
+      this.passphrase = program.passphrase;
+    }
+  }
+
   /**
    * Generate random verification token to be decrypted by the server
    * @returns {string}
@@ -190,7 +234,11 @@ class GpgAuthController extends CliController {
       var encryptedAuthToken = compat.stripslashes(compat.urldecode(response.headers['x-gpgauth-user-auth-token']));
 
       // decrypt
-      return Crypto.decrypt(encryptedAuthToken, ['--passphrase', _this.passphrase]);
+      var options;
+      if(_this.passphrase !== undefined) {
+        options = ['--passphrase', _this.passphrase];
+      }
+      return Crypto.decrypt(encryptedAuthToken, options);
     })
     .then(function(userAuthToken) {
       // validate decrypted token
