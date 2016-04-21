@@ -15,6 +15,7 @@ Legal
 Copyright 2016 Bolt Softwares Private Limited
 
 Licence: http://www.gnu.org/licenses/agpl-3.0.en.html
+
 Credits: https://www.passbolt.com/credits
 
 
