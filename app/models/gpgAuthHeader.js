@@ -8,7 +8,6 @@
 
 var Model = require('./model.js');
 var i18n = require('./i18n.js');
-var normalizeHeaderCase = require('header-case-normalizer');
 
 /**
  * The class that deals with users.

@@ -24,10 +24,10 @@
   "dependencies": {
     "commander": "^2.9.0",
     "gpg": "^0.4.0",
-    "header-case-normalizer": "^1.0.3",
     "jssha": "^2.0.2",
     "prompt": "^1.0.0",
     "request": "^2.69.0",
+    "tough-cookie-file-store": "^1.1.0",
     "validator": "^5.1.0",
     "xregexp": "^3.1.0",
     "y18n": "^3.2.1"

@@ -6,7 +6,7 @@ var pjson = require('./package.json');
 program
   .version(pjson.version)
   .command('info', 'default command', {noHelp: true, isDefault: true})
-  .command('auth', 'authentication test request')
+  .command('auth', 'Authentication actions, login or logout')
   .parse(process.argv);
 
 process.on('uncaughtException', function (err) {

@@ -6,14 +6,15 @@
  */
 "use strict";
 
-//var FileCookieStore = require('tough-cookie-filestore');
+var CliController = require('./cliController.js');
 var Domain = require('../models/domain.js');
 var Crypto = require('../models/crypto.js');
 var User = require('../models/user.js');
 var GpgAuthToken = require('../models/gpgAuthToken.js');
 var GpgAuthHeader = require('../models/gpgAuthHeader.js');
-var CliController = require('./cliController.js');
 var i18n = require('../models/i18n.js');
+var CookieStore = require('tough-cookie-file-store');
+var path = require('path');
 
 class GpgAuthController extends CliController {
 
@@ -23,16 +24,35 @@ class GpgAuthController extends CliController {
   constructor (program, argv) {
     super(program, argv);
     this._parseProgramArg(program, argv);
+    this.appDir = path.dirname(require.main.filename);
 
     // URLs
     var baseUrl = this.domain.url + '/auth/';
     this.URL_VERIFY = baseUrl + 'verify.json';
     this.URL_LOGIN = baseUrl + 'login.json';
     this.URL_LOGOUT = baseUrl + 'logout';
+    this.COOKIE_FILE = this.appDir + '/app/tmp/cookie.json';
 
     // Session cookie
-    this.cookieJar = this._request.jar();
+    this.cookie = new CookieStore(this.COOKIE_FILE);
+    this.cookieJar = this._request.jar(this.cookie);
     this._request.defaults({jar:this.cookieJar});
+  }
+
+  /**
+   * Is authentication required, or are we already logged in?
+   * @returns {boolean}
+   */
+  authRequired() {
+    if(this.cookie.isEmpty()) {
+      this.log('No authentication cookie found', 'verbose');
+      return true;
+    }
+    if(this.cookie.isExpired()) {
+      this.log('Cookie is expired', 'verbose');
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -43,7 +63,7 @@ class GpgAuthController extends CliController {
     this._generateVerifyToken();
 
     return Crypto
-      .encrypt(this.user.privateKey.fingerprint, this.token)
+      .encrypt(this.domain.publicKey.fingerprint, this.token)
       .then(function(encrypted) {
         return _this.post({
           url: _this.URL_VERIFY,
@@ -66,6 +86,12 @@ class GpgAuthController extends CliController {
    */
   login() {
     var _this = this;
+
+    if(!this.authRequired() && this.force === false) {
+      _this.log('You are already logged in!', 'verbose');
+      return Promise.resolve();
+    }
+
     _this.log('GPGAuth login start with fingerprint ' + _this.user.privateKey.fingerprint, 'verbose');
 
     // Stage 0 - verify the server identity
@@ -103,6 +129,7 @@ class GpgAuthController extends CliController {
       })
       .then(function(response) {
         _this._serverResponseHealthCheck('logout', response);
+        _this._clearCookie();
         _this.log('Logout OK', 'verbose');
         return true;
       })
@@ -116,12 +143,22 @@ class GpgAuthController extends CliController {
    * ==================================================
    */
   /**
+   * Clear cookies if any
+   */
+   _clearCookie() {
+    try {
+      require('fs').unlinkSync(_this.COOKIE_FILE);
+    } catch(e) {}
+   }
+
+  /**
    * Parse program arguments
    * @param program
    * @param argv
    * @private
    */
   _parseProgramArg(program, argv) {
+
     if(program !== undefined && program.fingerprint !== undefined) {
       this.user = new User({
         privateKey : {
@@ -143,6 +180,12 @@ class GpgAuthController extends CliController {
       // a gpg prompt will be triggered by gpg itself
     } else {
       this.passphrase = program.passphrase;
+    }
+
+    if (program !== undefined && program.force === undefined) {
+      this.force = false;
+    } else {
+      this.force = true;
     }
   }
 

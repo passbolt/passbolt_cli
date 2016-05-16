@@ -7,6 +7,9 @@ npm-debug.log
 # Config
 config/config.json
 
+# TMP files
+/app/tmp/
+
 # OS generated files #
 ######################
 .DS_Store

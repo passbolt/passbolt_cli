@@ -8,6 +8,7 @@
 
 var Model = require('./model.js');
 var Config = require('./config.js');
+var Key = require('./key.js');
 var i18n = require('./i18n.js');
 
 /**
@@ -85,6 +86,7 @@ class Domain extends Model {
       return new Error(i18n.__("Can not read domain url from file"));
     }
     this._url = config.domain.baseUrl;
+    this.publicKey = new Key(config.domain.publicKey);
     return true;
   };
 }
