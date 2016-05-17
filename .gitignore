@@ -8,6 +8,7 @@ npm-debug.log
 config/config.json
 
 # TMP files
+/app/tmp/
 
 # OS generated files #
 ######################
