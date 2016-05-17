@@ -88,7 +88,7 @@ class GpgAuthController extends CliController {
     var _this = this;
 
     if(!this.authRequired() && this.force === false) {
-      _this.log('You are already logged in!', 'verbose');
+      _this.log('GPGAuth Skipping, you are already logged in', 'verbose');
       return Promise.resolve();
     }
 
@@ -98,23 +98,20 @@ class GpgAuthController extends CliController {
     return _this.verify()
       .then(function(response) {
         // Stage 1 - get a token to prove identity
-        _this.log('Verify OK', 'verbose');
         return _this._stage1();
       })
       .then(function(userAuthToken) {
         // Stage 2 - send back the decrypted token
-        _this.log('Stage 1 OK', 'verbose');
         return _this._stage2(userAuthToken);
       })
       .then(function(response) {
         // Final stage - set the cookie and done!
-        _this.log('Stage 2 OK', 'verbose');
         var cookie = _this._request.cookie(response.headers['set-cookie'][0]);
         _this.cookieJar.setCookie(cookie, _this.domain.url);
         return true;
       })
       .catch(function(err) {
-        _this.log('Error during login', 'verbose');
+        _this.log('GPGAuth Error during login', 'verbose');
         _this.error(err);
       });
   }
@@ -124,13 +121,16 @@ class GpgAuthController extends CliController {
    */
   logout() {
     var _this = this;
+
+    _this.log('GET '+ _this.URL_LOGOUT, 'verbose');
     return _this.get({
-        url: _this.URL_LOGOUT
+        url: _this.URL_LOGOUT,
+        jar: _this.cookieJar
       })
       .then(function(response) {
         _this._serverResponseHealthCheck('logout', response);
         _this._clearCookie();
-        _this.log('Logout OK', 'verbose');
+        _this.log('200', 'verbose');
         return true;
       })
       .catch(function(err) {
@@ -147,7 +147,7 @@ class GpgAuthController extends CliController {
    */
    _clearCookie() {
     try {
-      require('fs').unlinkSync(_this.COOKIE_FILE);
+      require('fs').unlinkSync(this.COOKIE_FILE);
     } catch(e) {}
    }
 

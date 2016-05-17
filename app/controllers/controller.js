@@ -65,7 +65,11 @@ class Controller {
             result = response;
           })
           .on('data', function(chunk) {
-            result.body += chunk;
+            if(result.body === undefined) {
+              result.body = chunk;
+            } else {
+              result.body += chunk;
+            }
           })
           .on('end', function() {
             resolve(result);

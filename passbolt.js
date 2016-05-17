@@ -7,6 +7,8 @@ program
   .version(pjson.version)
   .command('info', 'default command', {noHelp: true, isDefault: true})
   .command('auth', 'Authentication actions, login or logout')
+  .command('users', 'Find one or more users')
+  .command('resources', 'Find one or more resources')
   .parse(process.argv);
 
 process.on('uncaughtException', function (err) {

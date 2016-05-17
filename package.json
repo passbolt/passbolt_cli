@@ -17,12 +17,14 @@
     "teams"
   ],
   "bin": {
-    "passbolt": "./index.js"
+    "passbolt": "index.js"
   },
   "author": "contact@passbolt.com",
   "license": "AGPL-3.0",
   "dependencies": {
+    "columnify": "^1.5.4",
     "commander": "^2.9.0",
+    "flat": "^2.0.0",
     "gpg": "^0.4.0",
     "jssha": "^2.0.2",
     "prompt": "^1.0.0",
