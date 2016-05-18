@@ -5,7 +5,6 @@ var pjson = require('./package.json');
 
 program
   .version(pjson.version)
-  .command('info', 'default command', {noHelp: true, isDefault: true})
   .command('auth', 'Authentication actions, login or logout')
   .command('users', 'Find one or more users')
   .command('get', 'View the OpenPGP data block of a given resource')
