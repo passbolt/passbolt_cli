@@ -98,7 +98,7 @@ Right now the basics, only authentication and read operations.
 
 Authentication
 ---------------
-Authentication is based on (GPGAuth)[https://www.passbolt.com/help/tech/auth], so it uses your private key
+Authentication is based on [GPGAuth](https://www.passbolt.com/help/tech/auth), so it uses your private key
 and your passphrase if you have one.
 
 You can provide your passphrase or let GPG handle the prompt.
