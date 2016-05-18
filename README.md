@@ -28,6 +28,7 @@ But you can easily try out! Bear with us! :)
 Copy the repository
 ```
 git clone git@github.com:passbolt/passbolt_cli.git
+```
 
 Move inside the new directory
 ```
@@ -103,6 +104,7 @@ and your passphrase if you have one.
 You can provide your passphrase or let GPG handle the prompt.
 ```
 $ passbolt auth -p ada@passbolt.com
+
 GPGAuth Skipping, you are already logged in
 ```
 
