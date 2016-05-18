@@ -24,7 +24,7 @@ var userController = new UserController(program, process.argv);
 userController
   .login()
   .then(function(){
-    return userController.find();
+    return userController.index();
   })
   .then(function(data) {
     var view = new UserIndexView(data);

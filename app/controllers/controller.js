@@ -13,8 +13,20 @@ class Controller {
    * Controller constructor
    * @param options
    */
-  constructor() {
+  constructor(program, argv) {
     this._request = require('request');
+    this._verbose = (program !== undefined && program.verbose !== undefined && program.verbose);
+  }
+
+  /**
+   * Log a message in console
+   * @param msg
+   * @param priority
+   */
+  log(msg, priority) {
+    if(priority === undefined || (priority === 'verbose' && this._verbose)) {
+      console.log(msg);
+    }
   }
 
   /**
@@ -25,15 +37,21 @@ class Controller {
   post(options) {
     var _this = this;
     var result = undefined;
+    _this.log('POST ' + options.url, 'verbose');
     return new Promise(function (resolve, reject) {
       try {
         _this._request
           .post(options)
           .on('response', function (response) {
+            _this.log(response.statusCode, 'verbose');
             result = response;
           })
           .on('data', function(chunk) {
-            result.body += chunk;
+            if(result.body === undefined) {
+              result.body = chunk;
+            } else {
+              result.body += chunk;
+            }
           })
           .on('end', function() {
             resolve(result);
@@ -57,11 +75,13 @@ class Controller {
   get(options) {
     var _this = this;
     var result = undefined;
+    _this.log('GET ' + options.url, 'verbose');
     return new Promise(function (resolve, reject) {
       try {
         _this._request
           .get(options)
           .on('response', function (response) {
+            _this.log(response.statusCode, 'verbose');
             result = response;
           })
           .on('data', function(chunk) {

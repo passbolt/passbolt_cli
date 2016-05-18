@@ -8,11 +8,15 @@
 "use strict";
 var View = require('../view.js');
 
-class UserIndexView extends View {
+class ResourceIndexView extends View {
 
   constructor (data) {
     super();
     this.data = [];
+
+    console.log(data);
+
+
     var max = data.body.length;
     var i = 0;
     var u;
@@ -30,6 +34,7 @@ class UserIndexView extends View {
   }
 
   render() {
+    console.log('render');
     console.log(this.columnify(this.data, {
       minWidth: 20,
       config: {
@@ -38,4 +43,4 @@ class UserIndexView extends View {
     }));
   }
 }
-module.exports = UserIndexView;
+module.exports = ResourceIndexView;

@@ -31,9 +31,9 @@ class GpgAuthController extends CliController {
     this.URL_VERIFY = baseUrl + 'verify.json';
     this.URL_LOGIN = baseUrl + 'login.json';
     this.URL_LOGOUT = baseUrl + 'logout';
-    this.COOKIE_FILE = this.appDir + '/app/tmp/cookie.json';
 
     // Session cookie
+    this.COOKIE_FILE = this.appDir + '/app/tmp/cookie.json';
     this.cookie = new CookieStore(this.COOKIE_FILE);
     this.cookieJar = this._request.jar(this.cookie);
     this._request.defaults({jar:this.cookieJar});
@@ -52,6 +52,7 @@ class GpgAuthController extends CliController {
       this.log('Cookie is expired', 'verbose');
       return true;
     }
+    //@TODO do a quick ping
     return false;
   }
 
@@ -108,6 +109,7 @@ class GpgAuthController extends CliController {
         // Final stage - set the cookie and done!
         var cookie = _this._request.cookie(response.headers['set-cookie'][0]);
         _this.cookieJar.setCookie(cookie, _this.domain.url);
+        _this.log('GPGAuth you are now logged in', 'verbose');
         return true;
       })
       .catch(function(err) {
@@ -122,7 +124,6 @@ class GpgAuthController extends CliController {
   logout() {
     var _this = this;
 
-    _this.log('GET '+ _this.URL_LOGOUT, 'verbose');
     return _this.get({
         url: _this.URL_LOGOUT,
         jar: _this.cookieJar
@@ -130,7 +131,6 @@ class GpgAuthController extends CliController {
       .then(function(response) {
         _this._serverResponseHealthCheck('logout', response);
         _this._clearCookie();
-        _this.log('200', 'verbose');
         return true;
       })
       .catch(function(err) {

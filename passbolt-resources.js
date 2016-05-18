@@ -24,10 +24,13 @@ var resourceController = new ResourceController(program, process.argv);
 resourceController
   .login()
   .then(function(){
-    return resourceController.find();
+    return resourceController.index();
   })
   .then(function(data) {
     var view = new ResourceIndexView(data);
     view.render();
     process.exit(1);
+  })
+  .catch(function(err) {
+    resourceController.error(err);
   });

@@ -18,7 +18,6 @@ class CliController extends Controller {
    */
   constructor(program, argv) {
     super(program, argv);
-    this._verbose = (program !== undefined && program.verbose !== undefined && program.verbose);
     this.prompt = prompt;
     this.prompt.colors = false;
     this.prompt.message = '';
