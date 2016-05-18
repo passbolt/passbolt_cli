@@ -1,5 +1,16 @@
 {
   "domain" : {
-    "baseUrl": "https://demo.passbolt.com"
+    "baseUrl": "your url",
+    "publicKey" : {
+      "fingerprint" : "the sha1 of the server fingerprint"
+    }
+  },
+  "user" : {
+    "firstname": "something",
+    "lastname" : "something",
+    "email" : "something@something.com",
+    "privateKey" : {
+      "fingerprint": "same here, a sha1"
+    }
   }
 }
