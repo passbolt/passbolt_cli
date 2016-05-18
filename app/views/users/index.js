@@ -6,9 +6,9 @@
  */
 
 "use strict";
-var View = require('../view.js');
+var AppView = require('../appView.js');
 
-class UserIndexView extends View {
+class UserIndexView extends AppView {
 
   constructor (data) {
     super();

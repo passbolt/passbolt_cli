@@ -6,41 +6,41 @@
  */
 
 "use strict";
-var View = require('../view.js');
+var AppView = require('../appView.js');
 
-class ResourceIndexView extends View {
+class ResourceIndexView extends AppView {
 
   constructor (data) {
     super();
     this.data = [];
 
-    console.log(data);
-
-
     var max = data.body.length;
     var i = 0;
-    var u;
+    var r;
 
     for (;i<max;i++) {
-      u = data.body[i];
-
+      r = data.body[i];
       this.data[i] = {
-        'UUID': u.Resource.id,
-        'Name': u.Resource.name,
-        'URI': u.Resource.uri,
-        'Modified': u.Resource.modified
+        'Name': r.Resource.name,
+        'Username': r.Resource.username,
+        'URI': r.Resource.uri,
+        'Modified': r.Resource.modified,
+        'UUID': r.Resource.id
       };
     }
   }
 
   render() {
-    console.log('render');
-    console.log(this.columnify(this.data, {
-      minWidth: 20,
-      config: {
-        'username' : {maxWidth: 64}
-      }
-    }));
+    if(this.data.length === 0) {
+      console.log('No resources to display. Create one first!');
+    } else {
+      console.log(this.columnify(this.data, {
+        minWidth: 20,
+        config: {
+          'username' : {maxWidth: 64}
+        }
+      }));
+    }
   }
 }
 module.exports = ResourceIndexView;

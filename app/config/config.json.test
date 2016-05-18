@@ -1,0 +1,16 @@
+{
+  "domain" : {
+    "baseUrl": "http://passbolt.dev",
+    "publicKey" : {
+      "fingerprint" : "2FC8945833C51946E937F9FED47B0811573EE67E"
+    }
+  },
+  "user" : {
+    "firstname": "User",
+    "lastname" : "Test",
+    "email" : "user@passbolt.com",
+    "privateKey" : {
+      "fingerprint": "1518D8673F353A65A8C3F412615186AFC9D7E7AE"
+    }
+  }
+}

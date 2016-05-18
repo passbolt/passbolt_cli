@@ -29,6 +29,7 @@ class GpgAuthController extends CliController {
     // URLs
     var baseUrl = this.domain.url + '/auth/';
     this.URL_VERIFY = baseUrl + 'verify.json';
+    this.URL_CHECKSESSION = baseUrl + 'checkSession.json';
     this.URL_LOGIN = baseUrl + 'login.json';
     this.URL_LOGOUT = baseUrl + 'logout';
 
@@ -44,16 +45,34 @@ class GpgAuthController extends CliController {
    * @returns {boolean}
    */
   authRequired() {
-    if(this.cookie.isEmpty()) {
-      this.log('No authentication cookie found', 'verbose');
-      return true;
+    var _this = this;
+
+    if(_this.force) {
+      this._clearCookie();
+      return Promise.resolve(true)
     }
-    if(this.cookie.isExpired()) {
-      this.log('Cookie is expired', 'verbose');
-      return true;
+
+    if(_this.cookie.isEmpty()) {
+      _this.log('No authentication cookie found', 'verbose');
+      return Promise.resolve(true);
     }
-    //@TODO do a quick ping
-    return false;
+
+    if(_this.cookie.isExpired()) {
+      _this.log('Cookie is expired', 'verbose');
+      //this._clearCookie();
+      return Promise.resolve(true);
+    }
+
+    return _this.get({
+        url: _this.URL_CHECKSESSION,
+        jar: _this.cookieJar
+      })
+      .then(function(response) {
+        return(response.statusCode !== 200);
+      })
+      .catch(function(err) {
+        _this.error(err);
+      });
   }
 
   /**
@@ -88,33 +107,35 @@ class GpgAuthController extends CliController {
   login() {
     var _this = this;
 
-    if(!this.authRequired() && this.force === false) {
-      _this.log('GPGAuth Skipping, you are already logged in', 'verbose');
-      return Promise.resolve();
-    }
-
-    _this.log('GPGAuth login start with fingerprint ' + _this.user.privateKey.fingerprint, 'verbose');
-
-    // Stage 0 - verify the server identity
-    return _this.verify()
-      .then(function(response) {
-        // Stage 1 - get a token to prove identity
-        return _this._stage1();
-      })
-      .then(function(userAuthToken) {
-        // Stage 2 - send back the decrypted token
-        return _this._stage2(userAuthToken);
-      })
-      .then(function(response) {
-        // Final stage - set the cookie and done!
-        var cookie = _this._request.cookie(response.headers['set-cookie'][0]);
-        _this.cookieJar.setCookie(cookie, _this.domain.url);
-        _this.log('GPGAuth you are now logged in', 'verbose');
-        return true;
-      })
-      .catch(function(err) {
-        _this.log('GPGAuth Error during login', 'verbose');
-        _this.error(err);
+    return this.authRequired()
+      .then(function(isRequired) {
+        if(!isRequired) {
+          _this.log('GPGAuth Skipping, you are already logged in', 'verbose');
+          return Promise.resolve(true);
+        } else {
+          _this.log('GPGAuth login start with fingerprint ' + _this.user.privateKey.fingerprint, 'verbose');
+          // Stage 0 - verify the server identity
+          return _this.verify()
+            .then(function(response) {
+              // Stage 1 - get a token to prove identity
+              return _this._stage1();
+            })
+            .then(function(userAuthToken) {
+              // Stage 2 - send back the decrypted token
+              return _this._stage2(userAuthToken);
+            })
+            .then(function(response) {
+              // Final stage - set the cookie and done!
+              var cookie = _this._request.cookie(response.headers['set-cookie'][0]);
+              _this.cookieJar.setCookie(cookie, _this.domain.url);
+              _this.log('GPGAuth you are now logged in', 'verbose');
+              return true;
+            })
+            .catch(function(err) {
+              _this.log('GPGAuth Error during login', 'verbose');
+              _this.error(err);
+            });
+          }
       });
   }
 

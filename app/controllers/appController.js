@@ -48,6 +48,34 @@ class AppController extends GpgAuthController {
   }
 
   /**
+   * View Action
+   * @param id
+   * @returns {Promise.<T>}
+   */
+  view(id) {
+    var _this = this;
+
+    // Check if this is a valid UUID
+    var validate = require('validator');
+    if(!validate.isUUID(id)) {
+      _this.Error(i18n.__('View requires a valid UUID'));
+    }
+
+    // Get the record
+    var url = _this.URL_BASE + '/' + id + '.json';
+    return _this.get({
+        url: url,
+        jar: _this.cookieJar
+      })
+      .then(function(response) {
+        return _this.__handleServerResponse(response);
+      })
+      .catch(function(err) {
+        _this.error(err);
+      });
+  }
+
+  /**
    * Server response handler
    * @param response
    * @returns {*}
