@@ -29,5 +29,5 @@ userController
   .then(function(data) {
     var view = new UserIndexView(data);
     view.render();
-    process.exit(1);
+    process.exit(0);
   });

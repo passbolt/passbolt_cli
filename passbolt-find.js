@@ -29,7 +29,7 @@ resourceController
   .then(function(data) {
     var view = new ResourceIndexView(data);
     view.render();
-    process.exit(1);
+    process.exit(0);
   })
   .catch(function(err) {
     resourceController.error(err);

@@ -33,7 +33,7 @@ switch (action) {
     gpgAuth
       .logout()
       .then(function(){
-        process.exit(1);
+        process.exit(0);
       });
     break;
   case 'login':
@@ -41,7 +41,7 @@ switch (action) {
     gpgAuth
       .login()
       .then(function(){
-        process.exit(1);
+        process.exit(0);
       });
     break;
 }

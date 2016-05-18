@@ -24,12 +24,12 @@ var resourceController = new ResourceController(program, process.argv);
 resourceController
   .login()
   .then(function(){
-    return resourceController.view('17c66127-0c5e-3510-a497-2e6a105109db');
+    return resourceController.view(program.args[0]);
   })
   .then(function(data) {
     var view = new GetView(data);
     view.render();
-    process.exit(1);
+    process.exit(0);
   })
   .catch(function(err) {
     resourceController.error(err);

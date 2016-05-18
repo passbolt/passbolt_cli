@@ -58,7 +58,7 @@ class AppController extends GpgAuthController {
     // Check if this is a valid UUID
     var validate = require('validator');
     if(!validate.isUUID(id)) {
-      _this.Error(i18n.__('View requires a valid UUID'));
+      _this.error(i18n.__('This is not a valid UUID: ' + id));
     }
 
     // Get the record
