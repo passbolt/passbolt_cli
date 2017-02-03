@@ -71,7 +71,7 @@ class Crypto {
         resolve: resolve,
         reject: reject
       };
-      Gpg.encrypt(msg, ['--armor','--recipient', recipient], function(error, buffer) {
+      Gpg.encrypt(msg, ['--armor','--recipient', recipient, '--yes', '--batch', '--trust-model', 'always'], function(error, buffer) {
         if (error != undefined) {
           return p.reject(error);
         }
