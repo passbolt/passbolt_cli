@@ -22,8 +22,7 @@ Credits: https://www.passbolt.com/credits
 How to get started?
 ===============================
 
-This is still a work in progress so the application is not available on NPM just yet.
-But you can easily try out! Bear with us! :)
+This is still a work in progress so the application so bear with us!
 
 Copy the repository
 ```
