@@ -1,7 +1,7 @@
 /**
  * Config Model
  *
- * @copyright (c) 2016-onwards Bolt Softwares pvt. ltd.
+ * @copyright (c) 2017 Passbolt SARL
  * @licence AGPL-3.0 http://www.gnu.org/licenses/agpl-3.0.en.html
  */
 "use strict";
@@ -25,8 +25,9 @@ class Config {
     }
     if(path === undefined) {
       file = _path.dirname(require.main.filename) + file;
+    } else {
+      file = path + file;
     }
-
     if(!fs.existsSync(file)) {
       return Error('Config file not found! [' + file + ']');
     }

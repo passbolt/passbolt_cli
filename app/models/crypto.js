@@ -1,5 +1,6 @@
 "use strict";
 
+var Config = require('./config');
 var Gpg = require('gpg');
 var XRegExp = require('xregexp');
 var jsSHA = require('jssha');
@@ -71,7 +72,16 @@ class Crypto {
         resolve: resolve,
         reject: reject
       };
-      Gpg.encrypt(msg, ['--armor','--recipient', recipient], function(error, buffer) {
+
+      var options = ['--armor','--recipient', recipient];
+      var config = Config.get();
+      if (config.gpg !== undefined && config.gpg.trust !== undefined) {
+        if (config.gpg.trust === 'always') {
+          options.push('--trust-model');
+          options.push('always');
+        }
+      }
+      Gpg.encrypt(msg, options, function(error, buffer) {
         if (error != undefined) {
           return p.reject(error);
         }
@@ -94,6 +104,7 @@ class Crypto {
         resolve: resolve,
         reject: reject
       };
+
       Gpg.decrypt(msg, options, function(error, decrypted) {
         if (error != undefined) {
           return p.reject(error);

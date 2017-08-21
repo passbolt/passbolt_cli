@@ -6,13 +6,13 @@
 	  /_/    \__,_/____/____/_.___/\____/_/\__/
 
 	Open source password manager for teams
-	(c) 2016 Bolt Softwares Pvt Ltd
+	(c) 2017 Passbolt SARL
 
 
 Legal
 ===============================
 
-Copyright 2016 Bolt Softwares Private Limited
+Copyright 2017 Passbolt SARL
 
 Licence: http://www.gnu.org/licenses/agpl-3.0.en.html
 
@@ -103,7 +103,7 @@ and your passphrase if you have one.
 
 You can provide your passphrase or let GPG handle the prompt.
 ```
-$ passbolt auth -p ada@passbolt.com
+$ passbolt auth login -p ada@passbolt.com
 
 GPGAuth Skipping, you are already logged in
 ```
@@ -111,6 +111,11 @@ GPGAuth Skipping, you are already logged in
 You can also logout. If let say you change your user config, or want to clear your session.
 ```
 $ passbolt auth logout
+```
+
+You can check if you are logged in or not.
+```
+$ passbolt auth check
 ```
 
 List the users
@@ -172,3 +177,11 @@ Of course you can chain and pipe things up like:
 ```
 $ passbolt get $(passbolt find | grep inkscape | awk '{print $6}') > secret.gpg; gpg --decrypt secret.gpp
 ```
+
+Runnning the tests
+-------------------
+```
+$ [sudo] npm install -g mocha
+$ mocha tests
+```
+

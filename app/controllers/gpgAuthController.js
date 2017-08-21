@@ -1,7 +1,7 @@
 /**
  * Authentication Controller
  *
- * @copyright (c) 2016-onwards Bolt Softwares pvt. ltd.
+ * @copyright (c) 2017 Passbolt SARL
  * @licence AGPL-3.0 http://www.gnu.org/licenses/agpl-3.0.en.html
  */
 "use strict";
@@ -157,6 +157,25 @@ class GpgAuthController extends CliController {
       .catch(function(err) {
         _this.error(err);
       });
+  }
+
+  /**
+   * Check if there is an active session
+   */
+  check() {
+    var _this = this;
+    return _this.get({
+      url: _this.URL_CHECKSESSION,
+      jar: _this.cookieJar
+    })
+    .then(function(response) {
+      var r = JSON.parse(response.body);
+      if(r.header.status === 'success') {
+        console.log('You are already logged in.');
+      } else {
+        console.log('You are not logged in.');
+      }
+    });
   }
 
   /* ==================================================

@@ -1,7 +1,7 @@
 /**
  * Gpg Auth Http Header Model
  *
- * @copyright (c) 2016-onwards Bolt Softwares pvt. ltd.
+ * @copyright (c) 2017 Passbolt SARL
  * @licence AGPL-3.0 http://www.gnu.org/licenses/agpl-3.0.en.html
  */
 "use strict";
@@ -10,7 +10,7 @@ var Model = require('./model.js');
 var i18n = require('./i18n.js');
 
 /**
- * The class that deals with users.
+ * The class that deals with GPGAuth Headers.
  */
 class GpgAuthHeader extends Model {
 

@@ -12,5 +12,8 @@
     "privateKey" : {
       "fingerprint": "03F60E958F4CB29723ACDF761353B5B15D9B054F"
     }
+  },
+  "gpg" : {
+    "trust": "always"
   }
 }
