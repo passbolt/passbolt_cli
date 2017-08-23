@@ -102,7 +102,7 @@ and your passphrase if you have one.
 
 You can provide your passphrase or let GPG handle the prompt.
 ```
-$ passbolt auth login -p ada@passbolt.com
+$ passbolt auth login -p ada_password
 
 GPGAuth Skipping, you are already logged in
 ```
