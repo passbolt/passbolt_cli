@@ -6,6 +6,7 @@
  */
 "use strict";
 var i18n = require('../models/i18n.js');
+var Config = require('../models/config.js');
 
 class Controller {
 
@@ -14,7 +15,9 @@ class Controller {
    * @param options
    */
   constructor(program, argv) {
+    var config = Config.get();
     this._request = require('request');
+    this._agentOptions = config.agentOptions;
     this._verbose = (program !== undefined && program.verbose !== undefined && program.verbose);
   }
 
@@ -36,6 +39,7 @@ class Controller {
    */
   post(options) {
     var _this = this;
+    options.agentOptions = _this._agentOptions;
     var result = undefined;
     _this.log('POST ' + options.url, 'verbose');
     return new Promise(function (resolve, reject) {
@@ -74,6 +78,7 @@ class Controller {
    */
   get(options) {
     var _this = this;
+    options.agentOptions = _this._agentOptions;
     var result = undefined;
     _this.log('GET ' + options.url, 'verbose');
     return new Promise(function (resolve, reject) {

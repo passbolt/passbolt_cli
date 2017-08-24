@@ -12,5 +12,8 @@
     "privateKey" : {
       "fingerprint": "same here, a sha1"
     }
+  },
+  "agentOptions": {
+    "rejectUnauthorized": true
   }
 }

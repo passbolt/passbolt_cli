@@ -71,6 +71,21 @@ with Ada for example:
   }
 }
 ```
+Some additional options are available:
+1. Gpg trust:
+Do not require ultimate trust for server public key
+```
+  "gpg" : {
+    "trust": "always"
+  }
+```
+
+2. Allow self signed certificates
+```
+  "agentOptions": {
+    "rejectUnauthorized": true
+  }
+```
 
 What commands do to you support?
 ================================
