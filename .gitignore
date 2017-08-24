@@ -5,7 +5,7 @@ npm-debug.log
 /bower_components
 
 # Config
-config/config.json
+app/config/config.json
 
 # TMP files
 /app/tmp/
