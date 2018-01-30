@@ -47,7 +47,7 @@ Make the symlink on our path point to the index.js
 Create or copy a configuration file with a user and a server config
 ```
 cd app/config
-cp config.default.json
+cp config.default.json config.json
 ```
 
 You can look at the examples in the config folder.
