@@ -33,7 +33,7 @@ class AppController extends GpgAuthController {
    */
   index() {
     var _this = this;
-    var url = _this.URL_BASE + '/index.json';
+    var url = _this.URL_BASE + '.json';
 
     return _this.get({
         url: url,

@@ -23,7 +23,7 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "columnify": "^1.5.4",
-    "commander": "^2.11.0",
+    "commander": "^2.13.0",
     "flat": "^4.0.0",
     "gpg": "^0.6.0",
     "jssha": "^2.3.1",
