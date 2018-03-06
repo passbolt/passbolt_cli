@@ -13,16 +13,15 @@ class UserGetView extends AppView {
   constructor (data) {
     super();
     this.data = [];
-    var u;
 
-    u = data.body;
+    this.user = data.body;
 
     this.data[0] = {
-      'first name': u.Profile.first_name,
-      'last name': u.Profile.last_name,
-      'username': u.User.username,
-      'fingerprint': u.Gpgkey.fingerprint,
-      'UUID': u.User.id
+      'first name': this.user.Profile.first_name,
+      'last name': this.user.Profile.last_name,
+      'username': this.user.User.username,
+      'fingerprint': this.user.Gpgkey.fingerprint,
+      'UUID': this.user.User.id
     };
   }
 
@@ -34,6 +33,8 @@ class UserGetView extends AppView {
         'username' : {maxWidth: 64}
       }
     }));
+    console.log('');
+    console.log(this.user.Gpgkey.armored_key);
   }
 }
 module.exports = UserGetView;
