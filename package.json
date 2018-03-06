@@ -23,15 +23,16 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "columnify": "^1.5.4",
-    "commander": "^2.13.0",
+    "commander": "^2.14.1",
     "flat": "^4.0.0",
     "gpg": "^0.6.0",
     "jssha": "^2.3.1",
+    "npm": "^5.7.1",
     "prompt": "^1.0.0",
-    "request": "^2.81.0",
-    "tough-cookie-file-store": "^1.1.1",
-    "validator": "^8.0.0",
-    "xregexp": "^3.2.0",
-    "y18n": "^3.2.1"
+    "request": "^2.83.0",
+    "tough-cookie-file-store": "^1.2.0",
+    "validator": "^9.4.1",
+    "xregexp": "^4.1.0",
+    "y18n": "^4.0.0"
   }
 }
