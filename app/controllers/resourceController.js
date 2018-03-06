@@ -14,6 +14,16 @@ class ResourceController extends AppController {
     return 'resources';
   }
 
+  /**
+   * View Action
+   * @param id
+   * @param string options
+   * @returns {Promise.<T>}
+   */
+  view(id, options) {
+    var options = 'contain[secret]=1';
+    return super.view(id, options);
+  }
 }
 
 module.exports = ResourceController;

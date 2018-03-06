@@ -33,7 +33,7 @@ class AppController extends GpgAuthController {
    */
   index() {
     var _this = this;
-    var url = _this.URL_BASE + '.json';
+    var url = _this.URL_BASE + '.json?api-version=v1';
 
     return _this.get({
         url: url,
@@ -50,9 +50,10 @@ class AppController extends GpgAuthController {
   /**
    * View Action
    * @param id
+   * @param string options
    * @returns {Promise.<T>}
    */
-  view(id) {
+  view(id, options) {
     var _this = this;
 
     // Check if this is a valid UUID
@@ -62,7 +63,11 @@ class AppController extends GpgAuthController {
     }
 
     // Get the record
-    var url = _this.URL_BASE + '/' + id + '.json';
+    var url = _this.URL_BASE + '/' + id + '.json?api-version=v1&';
+    if (typeof options !== 'undefined') {
+      url += options;
+    }
+    console.log(url);
     return _this.get({
         url: url,
         jar: _this.cookieJar
