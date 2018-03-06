@@ -6,7 +6,7 @@
 	  /_/    \__,_/____/____/_.___/\____/_/\__/
 
 	Open source password manager for teams
-	(c) 2017 Passbolt SARL
+	(c) 2018 Passbolt SARL
 
 
 Legal
@@ -98,9 +98,10 @@ Right now the basics, only authentication and read operations.
   Commands:
 
     auth        Authentication actions, login or logout
-    users       Find one or more users
     get         View the OpenPGP data block of a given resource
     find        Find one or more resources
+    users       List all users
+    user        List information for a given user
     help [cmd]  display help for [cmd]
 
   Options:
@@ -130,18 +131,6 @@ $ passbolt auth logout
 You can check if you are logged in or not.
 ```
 $ passbolt auth check
-```
-
-List the users
----------------
-```
-$ passbolt users
-
-FIRST NAME           LAST NAME            USERNAME              FINGERPRINT                              UUID
-Frances              Allen                frances@passbolt.com  98DA33350692F21BD5F83A17E8DC5617477FB14C 1c137bd7-2838-3c3d-a021-d2986d9126f5
-Kathleen             Antonelli            kathleen@passbolt.com 14D07AFFDE916BC904F17AFB4D203642A73AE279 201b442c-d6ca-3ee6-a443-ce669ca0ec6e
-Jean                 Bartik               jean@passbolt.com     8F758E3BDD8445361A8A6AD073BAC28524AA1193 7c7afd29-1b98-3c3e-ae55-adedc333fb4b
-...
 ```
 
 Find a password
@@ -183,7 +172,6 @@ INNhsjl+27LCiCNmH8RNvPce
 -----END PGP MESSAGE-----
 ```
 
-
 Putting it all together
 --------------------------
 
@@ -199,3 +187,25 @@ $ [sudo] npm install -g mocha
 $ mocha tests
 ```
 
+
+List the users
+---------------
+```
+$ passbolt users
+
+FIRST NAME           LAST NAME            USERNAME              FINGERPRINT                              UUID
+Frances              Allen                frances@passbolt.com  98DA33350692F21BD5F83A17E8DC5617477FB14C 1c137bd7-2838-3c3d-a021-d2986d9126f5
+Kathleen             Antonelli            kathleen@passbolt.com 14D07AFFDE916BC904F17AFB4D203642A73AE279 201b442c-d6ca-3ee6-a443-ce669ca0ec6e
+Jean                 Bartik               jean@passbolt.com     8F758E3BDD8445361A8A6AD073BAC28524AA1193 7c7afd29-1b98-3c3e-ae55-adedc333fb4b
+...
+```
+
+Find a user
+---------------
+```
+$ passbolt user 1c137bd7-2838-3c3d-a021-d2986d9126f5
+
+FIRST NAME           LAST NAME            USERNAME              FINGERPRINT                              UUID
+Frances              Allen                frances@passbolt.com  98DA33350692F21BD5F83A17E8DC5617477FB14C 1c137bd7-2838-3c3d-a021-d2986d9126f5
+...
+```
