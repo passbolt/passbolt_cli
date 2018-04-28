@@ -67,7 +67,6 @@ class AppController extends GpgAuthController {
     if (typeof options !== 'undefined') {
       url += options;
     }
-    console.log(url);
     return _this.get({
         url: url,
         jar: _this.cookieJar
