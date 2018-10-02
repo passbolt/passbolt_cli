@@ -9,20 +9,19 @@
 	(c) 2018 Passbolt SARL
 
 
-Legal
-===============================
+#Legal
 
-Copyright 2017 Passbolt SARL
-
+Copyright 2018 Passbolt SARL
 Licence: http://www.gnu.org/licenses/agpl-3.0.en.html
-
 Credits: https://www.passbolt.com/credits
 
+#What is the purpose of this repository
 
-How to get started?
-===============================
+This repository is a command line interface for passbolt API.
+It allows a user to interact with the passbolt server without the user of web extension.
+Currently works as a read only access only.
 
-This is still a work in progress so the application so bear with us!
+#How to get started?
 
 Copy the repository
 ```
@@ -71,8 +70,12 @@ with Ada for example:
   }
 }
 ```
+
+## Additional settings
 Some additional options are available:
-1. Gpg trust:
+
+### 1. Gpg trust:
+
 Do not require ultimate trust for server public key
 ```
   "gpg" : {
@@ -80,15 +83,22 @@ Do not require ultimate trust for server public key
   }
 ```
 
-2. Allow self signed certificates
+### 2. Working with self signed certificates
+
+By default SSL request will be refused for a connection which is not authorized with the list of 
+supplied CAs. *For testing purposes* you can set rejectUnauthorized to false, to ignore issues 
+with the certificate (authority, not matching names, etc).
+
+Please [review other options](https://github.com/request/request#using-optionsagentoptions) 
+that allow finer and safer control for self signed certificate, see. 
+
 ```
   "agentOptions": {
-    "rejectUnauthorized": true
+    "rejectUnauthorized": false
   }
 ```
 
-What commands do to you support?
-================================
+# What commands do to you support?
 
 Right now the basics, only authentication and read operations.
 ```
@@ -111,8 +121,7 @@ Right now the basics, only authentication and read operations.
 ```
 
 
-Authentication
----------------
+## Authentication
 Authentication is based on [GPGAuth](https://www.passbolt.com/help/tech/auth), so it uses your private key
 and your passphrase if you have one.
 
@@ -133,8 +142,7 @@ You can check if you are logged in or not.
 $ passbolt auth check
 ```
 
-Find a password
----------------
+## Find a password
 ```
 $ passbolt find
 
@@ -146,8 +154,7 @@ ftp                             user                 ftp://192.168.1.1          
 ...
 ```
 
-Get the encrypted password
---------------------------
+## Get the encrypted password
 
 Once you know the UUID from the find you can get it as follow
 ```
@@ -172,24 +179,22 @@ INNhsjl+27LCiCNmH8RNvPce
 -----END PGP MESSAGE-----
 ```
 
-Putting it all together
---------------------------
+## Putting it all together
 
 Of course you can chain and pipe things up like:
 ```
 $ passbolt get $(passbolt find | grep inkscape | awk '{print $6}') > secret.gpg; gpg --decrypt secret.gpp
 ```
 
-Runnning the tests
--------------------
+## Runnning the tests
+
 ```
 $ [sudo] npm install -g mocha
 $ mocha tests
 ```
 
 
-List the users
----------------
+## List the users
 ```
 $ passbolt users
 
@@ -200,8 +205,7 @@ Jean                 Bartik               jean@passbolt.com     8F758E3BDD844536
 ...
 ```
 
-Find a user
----------------
+## Find a user
 ```
 $ passbolt user 1c137bd7-2838-3c3d-a021-d2986d9126f5
 
