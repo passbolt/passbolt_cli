@@ -23,7 +23,12 @@ class GpgAuthController extends CliController {
    */
   constructor (program, argv) {
     super(program, argv);
-    this._parseProgramArg(program, argv);
+    try {
+      this._parseProgramArg(program, argv);
+    } catch(e) {
+      console.error(e.message);
+      process.exit(1);
+    }
     this.appDir = path.dirname(require.main.filename);
 
     // URLs

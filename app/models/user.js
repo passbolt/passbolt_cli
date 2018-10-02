@@ -80,7 +80,11 @@ class User extends Model {
    */
   __loadDefault () {
     var config = Config.get();
-    if (config.user.privateKey === undefined) {
+    if(config instanceof Error) {
+      return config;
+    }
+
+    if (!config || !config.user || !config.user.privateKey) {
       return new Error(i18n.__("Can not read user key from file"));
     }
     this._key = new Key(config.user.privateKey);
