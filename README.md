@@ -9,19 +9,21 @@
 	(c) 2018 Passbolt SARL
 
 
-#Legal
+# Legal
 
 Copyright 2018 Passbolt SARL
+
 Licence: http://www.gnu.org/licenses/agpl-3.0.en.html
+
 Credits: https://www.passbolt.com/credits
 
-#What is the purpose of this repository
+# What is the purpose of this repository
 
 This repository is a command line interface for passbolt API.
 It allows a user to interact with the passbolt server without the user of web extension.
 Currently works as a read only access only.
 
-#How to get started?
+# How to get started?
 
 Copy the repository
 ```
