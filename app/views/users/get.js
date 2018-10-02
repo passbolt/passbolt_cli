@@ -20,7 +20,7 @@ class UserGetView extends AppView {
       'first name': this.user.Profile.first_name,
       'last name': this.user.Profile.last_name,
       'username': this.user.User.username,
-      'fingerprint': this.user.Gpgkey.fingerprint,
+      'fingerprint': this.user.Gpgkey ? this.user.Gpgkey.fingerprint : '',
       'UUID': this.user.User.id
     };
   }
@@ -34,7 +34,11 @@ class UserGetView extends AppView {
       }
     }));
     console.log('');
-    console.log(this.user.Gpgkey.armored_key);
+    if(this.user.Gpgkey) {
+      console.log(this.user.Gpgkey.armored_key);
+    } else {
+      console.log('User is not active. No key to display.');
+    }
   }
 }
 module.exports = UserGetView;

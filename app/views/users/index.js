@@ -24,7 +24,7 @@ class UserIndexView extends AppView {
         'first name': u.Profile.first_name,
         'last name': u.Profile.last_name,
         'username': u.User.username,
-        'fingerprint': u.Gpgkey.fingerprint,
+        'fingerprint': u.Gpgkey ? u.Gpgkey.fingerprint : '',
         'UUID': u.User.id
       };
     }
