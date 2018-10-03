@@ -200,8 +200,7 @@ $ passbolt get -f $(passbolt find -f inkscape -i) > secret.gpg; gpg --decrypt se
 ## Runnning the tests
 
 ```
-$ [sudo] npm install -g mocha
-$ mocha tests
+$ npm test
 ```
 
 

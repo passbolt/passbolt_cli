@@ -4,7 +4,7 @@
   "description": "A command line client for passbolt",
   "main": "index.js",
   "scripts": {
-    "test": "passbolt --help"
+    "test": "mocha tests"
   },
   "repository": {
     "type": "git",
@@ -33,5 +33,9 @@
     "validator": "^10.8.0",
     "xregexp": "^4.2.0",
     "y18n": "^4.0.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0"
   }
 }
