@@ -232,6 +232,8 @@ class GpgAuthController extends CliController {
     } else {
       this.force = true;
     }
+
+    this.filter = typeof program.filter === 'string' ? program.filter : '';
   }
 
   /**

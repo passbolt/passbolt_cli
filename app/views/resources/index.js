@@ -10,36 +10,40 @@ var AppView = require('../appView.js');
 
 class ResourceIndexView extends AppView {
 
-  constructor (data) {
+  constructor (data, filter = '', uuidOnly = false) {
     super();
-    this.data = [];
-
-    var max = data.body.length;
-    var i = 0;
-    var r;
-
-    for (;i<max;i++) {
-      r = data.body[i];
-      this.data[i] = {
-        'Name': r.Resource.name,
-        'Username': r.Resource.username,
-        'URI': r.Resource.uri,
-        'Modified': r.Resource.modified,
-        'UUID': r.Resource.id
-      };
-    }
+    this.uuidOnly = uuidOnly;
+    this.data = data
+      .body
+      .filter(function(r) {
+        return r.Resource.name.toLowerCase().indexOf(filter) >= 0 ||
+          r.Resource.uri.toLowerCase().indexOf(filter) >= 0;
+      })
+      .map(function(r) {
+        return {
+          'Name': r.Resource.name,
+          'Username': r.Resource.username,
+          'URI': r.Resource.uri,
+          'Modified': r.Resource.modified,
+          'UUID': r.Resource.id
+        }
+      });
   }
 
   render() {
     if(this.data.length === 0) {
       console.log('No resources to display. Create one first!');
     } else {
-      console.log(this.columnify(this.data, {
+      const columnOptions = this.uuidOnly ? {
+        columns: ['UUID'],
+        showHeaders: false,
+      } : {
         minWidth: 20,
         config: {
           'username' : {maxWidth: 64}
         }
-      }));
+      };
+      console.log(this.columnify(this.data, columnOptions));
     }
   }
 }

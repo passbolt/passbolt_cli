@@ -18,16 +18,23 @@ program
   .option('-u, --fingerprint <fingerprint>', 'The user key fingerprint to authenticate with')
   .option('-p, --passphrase <passphrase>', 'The key passphrase')
   .option('-v, --verbose', 'Display additional debug information')
+  .option('-f, --filter [search]', 'Filter resource by search term', function(filter) {
+    return filter.toLowerCase();
+  })
+  .option('-i, --uuid', 'Display only UUID')
   .parse(process.argv);
 
-var resourceController = new ResourceController(program, process.argv);
+
+const filter = typeof program.filter === 'string' ? program.filter : '';
+const resourceController = new ResourceController(program, process.argv);
+
 resourceController
   .login()
   .then(function(){
     return resourceController.index();
   })
   .then(function(data) {
-    var view = new ResourceIndexView(data);
+    var view = new ResourceIndexView(data, filter, program.uuid);
     view.render();
     process.exit(0);
   })
