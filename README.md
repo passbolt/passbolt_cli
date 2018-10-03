@@ -156,6 +156,15 @@ ftp                             user                 ftp://192.168.1.1          
 ...
 ```
 
+You can filter results and display UUID only if needed:
+
+```
+$ passbolt find -f Enlightenment --uuid
+
+2af40344-b330-30a8-ac26-64b2776f07e0
+```
+
+
 ## Get the encrypted password
 
 Once you know the UUID from the find you can get it as follow
@@ -185,7 +194,7 @@ INNhsjl+27LCiCNmH8RNvPce
 
 Of course you can chain and pipe things up like:
 ```
-$ passbolt get $(passbolt find | grep inkscape | awk '{print $6}') > secret.gpg; gpg --decrypt secret.gpp
+$ passbolt get -f $(passbolt find -f inkscape -i) > secret.gpg; gpg --decrypt secret.gpp
 ```
 
 ## Runnning the tests
