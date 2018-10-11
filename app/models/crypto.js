@@ -1,27 +1,30 @@
-"use strict";
-
-var Config = require('./config');
-var Gpg = require('gpg');
-var XRegExp = require('xregexp');
-var jsSHA = require('jssha');
-var randomBytes = require('crypto').randomBytes;
-var StringDecoder = require('string_decoder').StringDecoder;
+/**
+ * Crypto class
+ *
+ * @copyright (c) 2018 Passbolt SARL
+ * @licence AGPL-3.0 http://www.gnu.org/licenses/agpl-3.0.en.html
+ */
+const Config = require('./config');
+const Gpg = require('gpg');
+const XRegExp = require('xregexp');
+const jsSHA = require('jssha');
+const randomBytes = require('crypto').randomBytes;
+const StringDecoder = require('string_decoder').StringDecoder;
 
 class Crypto {
-
   /**
    * Generate a random hexadecimal string of a specified length
    * @param size int
    * @returns {*}
    */
-  static generateRandomHex (size) {
-    if(size === undefined) {
+  static generateRandomHex(size) {
+    if (size === undefined) {
       return new Error('generateRandomHex size is undefined');
     }
-    var text = '';
-    var possible = 'ABCDEF0123456789';
-    var random_array = randomBytes(size);
-    for(var i=size; i > 0; i--) {
+    let text = '';
+    const possible = 'ABCDEF0123456789';
+    const random_array = randomBytes(size);
+    for (let i = size; i > 0; i--) {
       text += possible.charAt(Math.floor(random_array[i] % possible.length));
     }
     return text;
@@ -34,26 +37,25 @@ class Crypto {
    * @returns uuid string
    */
   static uuid(seed, lowercase) {
-    var hashStr;
+    let hashStr;
 
     // Generate a random hash if no seed is provided
-    if(typeof seed === 'undefined') {
+    if (typeof seed === 'undefined') {
       hashStr = Crypto.generateRandomHex(32);
-    }
-    else {
+    } else {
       // Create SHA hash from seed.
-      var shaObj = new jsSHA('SHA-1', 'TEXT');
+      const shaObj = new jsSHA('SHA-1', 'TEXT');
       shaObj.update(seed);
       hashStr = shaObj.getHash('HEX').substring(0, 32);
     }
     // Build a uuid based on the hash
-    var search = XRegExp('^(?<first>.{8})(?<second>.{4})(?<third>.{1})(?<fourth>.{3})(?<fifth>.{1})(?<sixth>.{3})(?<seventh>.{12}$)');
-    var replace = XRegExp('${first}-${second}-3${fourth}-a${sixth}-${seventh}');
+    const search = XRegExp('^(?<first>.{8})(?<second>.{4})(?<third>.{1})(?<fourth>.{3})(?<fifth>.{1})(?<sixth>.{3})(?<seventh>.{12}$)');
+    const replace = XRegExp('${first}-${second}-3${fourth}-a${sixth}-${seventh}');
 
     // Replace regexp by corresponding mask, and remove / character at each side of the result.
-    var uuid = XRegExp.replace(hashStr, search, replace).replace(/\//g, '');
+    const uuid = XRegExp.replace(hashStr, search, replace).replace(/\//g, '');
 
-    if(lowercase === false) {
+    if (lowercase === false) {
       return uuid.toUpperCase();
     } else {
       return uuid.toLowerCase();
@@ -67,28 +69,28 @@ class Crypto {
    * @returns {Promise}
    */
   static encrypt(recipient, msg) {
-    var promise = new Promise( function (resolve, reject) {
-      var p = {
-        resolve: resolve,
-        reject: reject
+    const promise = new Promise(((resolve, reject) => {
+      const p = {
+        resolve,
+        reject
       };
 
-      var options = ['--armor','--recipient', recipient];
-      var config = Config.get();
+      const options = ['--armor', '--recipient', recipient];
+      const config = Config.get();
       if (config.gpg !== undefined && config.gpg.trust !== undefined) {
         if (config.gpg.trust === 'always') {
           options.push('--trust-model');
           options.push('always');
         }
       }
-      Gpg.encrypt(msg, options, function(error, buffer) {
+      Gpg.encrypt(msg, options, (error, buffer) => {
         if (error != undefined) {
           return p.reject(error);
         }
-        var decoder = new StringDecoder('utf8');
+        const decoder = new StringDecoder('utf8');
         return p.resolve(decoder.write(buffer));
       });
-    });
+    }));
     return promise;
   }
 
@@ -99,19 +101,19 @@ class Crypto {
    * @returns {Promise}
    */
   static decrypt(msg, options) {
-    var promise = new Promise( function (resolve, reject) {
-      var p = {
-        resolve: resolve,
-        reject: reject
+    const promise = new Promise(((resolve, reject) => {
+      const p = {
+        resolve,
+        reject
       };
 
-      Gpg.decrypt(msg, options, function(error, decrypted) {
+      Gpg.decrypt(msg, options, (error, decrypted) => {
         if (error != undefined) {
           return p.reject(error);
         }
         return p.resolve(decrypted.toString('utf8'));
       });
-    });
+    }));
     return promise;
   }
 }

@@ -5,19 +5,18 @@
  * @licence AGPL-3.0 http://www.gnu.org/licenses/agpl-3.0.en.html
  */
 
-"use strict";
-var AppView = require('../appView.js');
+
+const AppView = require('../appView.js');
 
 class UserIndexView extends AppView {
-
-  constructor (data) {
+  constructor(data) {
     super();
     this.data = [];
-    var max = data.body.length;
-    var i = 0;
-    var u;
+    const max = data.body.length;
+    let i = 0;
+    let u;
 
-    for (;i<max;i++) {
+    for (;i < max; i++) {
       u = data.body[i];
 
       this.data[i] = {
@@ -35,7 +34,7 @@ class UserIndexView extends AppView {
       minWidth: 20,
       columns: ['first name', 'last name', 'username', 'fingerprint', 'UUID'],
       config: {
-        'username' : {maxWidth: 64}
+        'username': {maxWidth: 64}
       }
     }));
   }

@@ -4,10 +4,9 @@
  * @copyright (c) 2018 Passbolt SARL
  * @licence AGPL-3.0 http://www.gnu.org/licenses/agpl-3.0.en.html
  */
-"use strict";
-
-var i18n = require('../models/i18n.js');
-var GpgAuthController = require('./gpgAuthController.js');
+const i18n = require('../models/i18n.js');
+const GpgAuthController = require('./gpgAuthController.js');
+const validate = require('validator');
 
 class AppController extends GpgAuthController {
   /**
@@ -15,16 +14,16 @@ class AppController extends GpgAuthController {
    * @param program
    * @param argv
    */
-  constructor (program, argv) {
-    super(program, argv);
-    this.URL_BASE = this.domain.url + '/' + this.getName();
+  constructor(program) {
+    super(program);
+    this.URL_BASE = `${this.domain.url}/${this.getName()}`;
   }
 
   /**
    * App controllers should not be instanciated without a name
    */
   getName() {
-    throw new Error(i18n.__('Error: no controller name set') + options.url);
+    throw new Error(i18n.__('Error: no controller name set'));
   }
 
   /**
@@ -32,51 +31,45 @@ class AppController extends GpgAuthController {
    * @returns {Promise.<T>}
    */
   index() {
-    var _this = this;
-    var url = _this.URL_BASE + '.json?api-version=v1';
-
-    return _this.get({
-        url: url,
-        jar: _this.cookieJar
-      })
-      .then(function(response) {
-        return _this.__handleServerResponse(response);
-      })
-      .catch(function(err) {
-        _this.error(err);
-      });
+    const url = `${this.URL_BASE}.json?api-version=v1`;
+    const request  = {
+      url,
+      jar: this.cookieJar
+    };
+    return this.get(request)
+    .then(response => this.__handleServerResponse(response))
+    .catch(err => {
+      this.error(err);
+    });
   }
 
   /**
    * View Action
    * @param id
-   * @param string options
-   * @returns {Promise.<T>}
+   * @param options
+   * @returns {Promise<any>}
    */
   view(id, options) {
-    var _this = this;
-
     // Check if this is a valid UUID
-    var validate = require('validator');
-    if(!validate.isUUID(id)) {
-      _this.error(i18n.__('This is not a valid UUID: ' + id));
+    if (!validate.isUUID(id)) {
+      this.error(i18n.__(`This is not a valid UUID: ${id}`));
     }
 
     // Get the record
-    var url = _this.URL_BASE + '/' + id + '.json?api-version=v1&';
+    let url = `${this.URL_BASE}/${id}.json?api-version=v1&`;
     if (typeof options !== 'undefined') {
       url += options;
     }
-    return _this.get({
-        url: url,
-        jar: _this.cookieJar
-      })
-      .then(function(response) {
-        return _this.__handleServerResponse(response);
-      })
-      .catch(function(err) {
-        _this.error(err);
-      });
+    const request = {
+      url,
+      jar: this.cookieJar
+    };
+
+    return this.get(request)
+    .then(response => this.__handleServerResponse(response))
+    .catch(err => {
+      this.error(err);
+    });
   }
 
   /**
@@ -86,12 +79,17 @@ class AppController extends GpgAuthController {
    * @private
    */
   __handleServerResponse(response) {
-    var result;
+    let result;
     try {
       result = JSON.parse(response.body);
     } catch (syntaxError) {
       this.log(response.body, 'verbose');
-      this.error(i18n.__('Error') + ' ' + response.statusCode + i18n.__('could not parse server response.'));
+      this.error(`${i18n.__('Error')} ${response.statusCode} ${i18n.__('could not parse server response.')}`);
+      return;
+    }
+    if (response.statusCode === 200 && result.header.url.startsWith('/mfa')) {
+      this.error(`${i18n.__('Error')} ${response.statusCode} ${i18n.__('MFA required.')}`);
+      return;
     }
     return result;
   }

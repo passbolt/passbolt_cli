@@ -4,45 +4,42 @@
  * @copyright (c) 2018 Passbolt SARL
  * @licence AGPL-3.0 http://www.gnu.org/licenses/agpl-3.0.en.html
  */
-"use strict";
-
-var CliController = require('./cliController.js');
-var Domain = require('../models/domain.js');
-var Crypto = require('../models/crypto.js');
-var User = require('../models/user.js');
-var GpgAuthToken = require('../models/gpgAuthToken.js');
-var GpgAuthHeader = require('../models/gpgAuthHeader.js');
-var i18n = require('../models/i18n.js');
-var CookieStore = require('tough-cookie-file-store');
-var path = require('path');
+const CliController = require('./cliController.js');
+const Domain = require('../models/domain.js');
+const Crypto = require('../models/crypto.js');
+const User = require('../models/user.js');
+const GpgAuthToken = require('../models/gpgAuthToken.js');
+const GpgAuthHeader = require('../models/gpgAuthHeader.js');
+const i18n = require('../models/i18n.js');
+const CookieStore = require('tough-cookie-file-store');
+const path = require('path');
 
 class GpgAuthController extends CliController {
-
   /**
    * Constructor
    */
-  constructor (program, argv) {
-    super(program, argv);
+  constructor(program) {
+    super(program);
     try {
-      this._parseProgramArg(program, argv);
-    } catch(e) {
+      this._parseProgramArg(program);
+    } catch (e) {
       console.error(e.message);
       process.exit(1);
     }
     this.appDir = path.dirname(require.main.filename);
 
     // URLs
-    var baseUrl = this.domain.url + '/auth/';
-    this.URL_VERIFY = baseUrl + 'verify.json';
-    this.URL_CHECKSESSION = baseUrl + 'checkSession.json';
-    this.URL_LOGIN = baseUrl + 'login.json';
-    this.URL_LOGOUT = baseUrl + 'logout';
+    const baseUrl = `${this.domain.url}/auth/`;
+    this.URL_VERIFY = `${baseUrl}verify.json`;
+    this.URL_CHECKSESSION = `${baseUrl}checkSession.json`;
+    this.URL_LOGIN = `${baseUrl}login.json`;
+    this.URL_LOGOUT = `${baseUrl}logout`;
 
     // Session cookie
-    this.COOKIE_FILE = this.appDir + '/app/tmp/cookie.json';
+    this.COOKIE_FILE = `${this.appDir}/app/tmp/cookie.json`;
     this.cookie = new CookieStore(this.COOKIE_FILE);
     this.cookieJar = this._request.jar(this.cookie);
-    this._request.defaults({jar:this.cookieJar});
+    this._request.defaults({jar: this.cookieJar});
   }
 
   /**
@@ -50,97 +47,91 @@ class GpgAuthController extends CliController {
    * @returns {boolean}
    */
   authRequired() {
-    var _this = this;
 
-    if(_this.force) {
+    if (this.force) {
       this._clearCookie();
-      return Promise.resolve(true)
-    }
-
-    if(_this.cookie.isEmpty()) {
-      _this.log('No authentication cookie found', 'verbose');
       return Promise.resolve(true);
     }
 
-    if(_this.cookie.isExpired()) {
-      _this.log('Cookie is expired', 'verbose');
+    if (this.cookie.isEmpty()) {
+      this.log('No authentication cookie found', 'verbose');
+      return Promise.resolve(true);
+    }
+
+    if (this.cookie.isExpired()) {
+      this.log('Cookie is expired', 'verbose');
       //this._clearCookie();
       return Promise.resolve(true);
     }
 
-    return _this.get({
-        url: _this.URL_CHECKSESSION,
-        jar: _this.cookieJar
-      })
-      .then(function(response) {
-        return(response.statusCode !== 200);
-      })
-      .catch(function(err) {
-        _this.error(err);
-      });
+    return this.get({
+      url: this.URL_CHECKSESSION,
+      jar: this.cookieJar
+    })
+    .then(response => (response.statusCode !== 200))
+    .catch(err => {
+      this.error(err);
+    });
   }
 
   /**
    * GPGAuth Verify Step
    */
   verify() {
-    var _this = this;
     this._generateVerifyToken();
 
     return Crypto
-      .encrypt(this.domain.publicKey.fingerprint, this.token)
-      .then(function(encrypted) {
-        return _this.post({
-          url: _this.URL_VERIFY,
-          form: {
-            'data[gpg_auth][keyid]' : _this.user.privateKey.fingerprint,
-            'data[gpg_auth][server_verify_token]' : encrypted
-          }
-        });
-      })
-      .then(function(results) {
-        return _this._onVerifyResponse(results);
-      })
-      .catch(function(err) {
-        throw err;
-      });
+    .encrypt(this.domain.publicKey.fingerprint, this.token)
+    .then(encrypted => this.post({
+      url: this.URL_VERIFY,
+      form: {
+        'data[gpg_auth][keyid]': this.user.privateKey.fingerprint,
+        'data[gpg_auth][server_verify_token]': encrypted
+      }
+    }))
+    .then(results => this._onVerifyResponse(results))
+    .catch(err => {
+      throw err;
+    });
   }
 
   /**
    * Perform GPG Auth Login
    */
-  login() {
-    var _this = this;
-
+  loginIfNeeded() {
     return this.authRequired()
-      .then(function(isRequired) {
-        if(!isRequired) {
-          _this.log('GPGAuth Skipping, you are already logged in', 'verbose');
-          return Promise.resolve(true);
-        } else {
-          _this.log('GPGAuth login start with fingerprint ' + _this.user.privateKey.fingerprint, 'verbose');
-          // Stage 0 - verify the server identity
-          return _this.verify()
-            .then(function(response) {
-              // Stage 1 - get a token to prove identity
-              return _this._stage1();
-            })
-            .then(function(userAuthToken) {
-              // Stage 2 - send back the decrypted token
-              return _this._stage2(userAuthToken);
-            })
-            .then(function(response) {
-              // Final stage - set the cookie and done!
-              var cookie = _this._request.cookie(response.headers['set-cookie'][0]);
-              _this.cookieJar.setCookie(cookie, _this.domain.url);
-              _this.log('GPGAuth you are now logged in', 'verbose');
-              return true;
-            })
-            .catch(function(err) {
-              _this.log('GPGAuth Error during login', 'verbose');
-              _this.error(err);
-            });
-          }
+    .then(isRequired => {
+      if (!isRequired) {
+        this.log('GPGAuth Skipping, you are already logged in', 'verbose');
+        return Promise.resolve(true);
+      } else {
+        this.log(`GPGAuth login start with fingerprint ${this.user.privateKey.fingerprint}`, 'verbose');
+        // Stage 0 - verify the server identity
+        return this.login();
+      }
+    });
+  }
+
+  login() {
+    return this.verify()
+      .then(() =>
+        // Stage 1 - get a token to prove identity
+        this._stage1()
+      )
+      .then(userAuthToken =>
+        // Stage 2 - send back the decrypted token
+        this._stage2(userAuthToken)
+      )
+      .then(response => {
+        // Final stage - set the cookie and done!
+        const cookie = this._request.cookie(response.headers['set-cookie'][0]);
+        this.cookieJar.setCookie(cookie, this.domain.url);
+        this.log('GPGAuth you are now logged in', 'verbose');
+        return true;
+      })
+      .catch(err => {
+        this.log('GPGAuth Error during login', 'verbose');
+        this.error(err);
       });
   }
 
@@ -148,34 +139,31 @@ class GpgAuthController extends CliController {
    * Perform GPG Auth Logout
    */
   logout() {
-    var _this = this;
-
-    return _this.get({
-        url: _this.URL_LOGOUT,
-        jar: _this.cookieJar
-      })
-      .then(function(response) {
-        _this._serverResponseHealthCheck('logout', response);
-        _this._clearCookie();
-        return true;
-      })
-      .catch(function(err) {
-        _this.error(err);
-      });
+    return this.get({
+      url: _this.URL_LOGOUT,
+      jar: _this.cookieJar
+    })
+    .then(response => {
+      this._serverResponseHealthCheck('logout', response);
+      this._clearCookie();
+      return true;
+    })
+    .catch(err => {
+      this.error(err);
+    });
   }
 
   /**
    * Check if there is an active session
    */
   check() {
-    var _this = this;
-    return _this.get({
-      url: _this.URL_CHECKSESSION,
-      jar: _this.cookieJar
+    return this.get({
+      url: this.URL_CHECKSESSION,
+      jar: this.cookieJar
     })
-    .then(function(response) {
-      var r = JSON.parse(response.body);
-      if(r.header.status === 'success') {
+    .then(response => {
+      const r = JSON.parse(response.body);
+      if (r.header.status === 'success') {
         console.log('You are already logged in.');
       } else {
         console.log('You are not logged in.');
@@ -190,23 +178,21 @@ class GpgAuthController extends CliController {
   /**
    * Clear cookies if any
    */
-   _clearCookie() {
+  _clearCookie() {
     try {
       require('fs').unlinkSync(this.COOKIE_FILE);
-    } catch(e) {}
-   }
+    } catch (e) {}
+  }
 
   /**
    * Parse program arguments
    * @param program
-   * @param argv
    * @private
    */
-  _parseProgramArg(program, argv) {
-
-    if(program !== undefined && program.fingerprint !== undefined) {
+  _parseProgramArg(program) {
+    if (program !== undefined && program.fingerprint !== undefined) {
       this.user = new User({
-        privateKey : {
+        privateKey: {
           fingerprint: program.fingerprint
         }
       });
@@ -214,13 +200,13 @@ class GpgAuthController extends CliController {
       this.user = new User();
     }
 
-    if(program !== undefined && program.domain === undefined) {
+    if (program !== undefined && program.domain === undefined) {
       this.domain = new Domain();
     } else {
       this.domain = program.domain;
     }
 
-    if(program !== undefined && program.passphrase === undefined) {
+    if (program !== undefined && program.passphrase === undefined) {
       // if no passphrase is given but is needed
       // a gpg prompt will be triggered by gpg itself
     } else {
@@ -238,8 +224,8 @@ class GpgAuthController extends CliController {
    * Generate random verification token to be decrypted by the server
    * @returns {string}
    */
-  _generateVerifyToken () {
-    var t = new GpgAuthToken();
+  _generateVerifyToken() {
+    const t = new GpgAuthToken();
     this.token = t.token;
     return this.token;
   }
@@ -251,29 +237,29 @@ class GpgAuthController extends CliController {
    * @returns true or promise if reject
    */
   _serverResponseHealthCheck(step, response) {
-    var error_msg;
+    let error_msg;
 
     // Check if the HTTP status is OK
-    if(response.statusCode !== 200) {
-      return new Error(i18n.__('There was a problem when trying to communicate with the server') +
-        ' (HTTP Code:' + response.status +')');
+    if (response.statusCode !== 200) {
+      return new Error(`${i18n.__('There was a problem when trying to communicate with the server')
+      } (HTTP Code:${response.status})`);
     }
 
     // Check if there is GPGAuth error flagged by the server
-    if(response.headers['x-gpgauth-error'] != undefined) {
+    if (response.headers['x-gpgauth-error'] !== undefined) {
       error_msg = i18n.__('The server rejected the verification request.') + response.headers['x-gpgauth-debug'];
       return new Error(error_msg);
     }
 
     // Check if the headers are correct
-    var result = GpgAuthHeader.validateByStage(step, response.headers);
-    if(result === Error) {
+    const result = GpgAuthHeader.validateByStage(step, response.headers);
+    if (result === Error) {
       error_msg = i18n.__('The server was unable to respect the authentication protocol.');
       return new Error(error_msg);
     }
 
     return true;
-  };
+  }
 
   /**
    * Process a verify step response
@@ -282,17 +268,17 @@ class GpgAuthController extends CliController {
    */
   _onVerifyResponse(response) {
     // check headers
-    var r = this._serverResponseHealthCheck('verify', response);
-    if(r instanceof Error) {
+    let r = this._serverResponseHealthCheck('verify', response);
+    if (r instanceof Error) {
       throw new Error(r.message);
     }
     // check token
-    var token = response.headers['x-gpgauth-verify-response'];
+    const token = response.headers['x-gpgauth-verify-response'];
     r = GpgAuthToken.validate('token', token);
-    if( r instanceof Error) {
+    if (r instanceof Error) {
       throw new Error(i18n.__('Error: GPGAuth verify step failed. Maybe your user does not exist or have been deleted.'));
     }
-    if(this.token !== undefined && token !== this.token) {
+    if (this.token !== undefined && token !== this.token) {
       throw new Error(i18n.__('Error: The server was unable to identify. GPGAuth tokens do not match.'));
     }
     return response;
@@ -304,41 +290,40 @@ class GpgAuthController extends CliController {
    * @private
    */
   _stage1() {
-    var _this = this;
-    return _this.post({
-      url: _this.URL_LOGIN,
+    return this.post({
+      url: this.URL_LOGIN,
       form: {
-        'data[gpg_auth][keyid]': _this.user.privateKey.fingerprint
+        'data[gpg_auth][keyid]': this.user.privateKey.fingerprint
       }
     })
-    .then(function(response) {
+    .then(response => {
       // perform protocol health checks on server response
-      var r = _this._serverResponseHealthCheck('login', response);
-      if(r instanceof Error) {
+      const r = this._serverResponseHealthCheck('login', response);
+      if (r instanceof Error) {
         throw new Error(r.message);
       }
       // cleanup the encrypted auth string
-      var compat = require('../lib/phpjs.js');
-      var encryptedAuthToken = compat.stripslashes(compat.urldecode(response.headers['x-gpgauth-user-auth-token']));
+      const compat = require('../lib/phpjs.js');
+      const encryptedAuthToken = compat.stripslashes(compat.urldecode(response.headers['x-gpgauth-user-auth-token']));
 
       // decrypt
-      var options;
-      if(_this.passphrase !== undefined) {
-        options = ['--passphrase', _this.passphrase];
+      let options;
+      if (this.passphrase !== undefined) {
+        options = ['--passphrase', this.passphrase];
       }
       return Crypto.decrypt(encryptedAuthToken, options);
     })
-    .then(function(userAuthToken) {
+    .then(userAuthToken => {
       // validate decrypted token
-      var r = GpgAuthToken.validate('token', userAuthToken);
-      if(r instanceof Error) {
+      const r = GpgAuthToken.validate('token', userAuthToken);
+      if (r instanceof Error) {
         throw new Error(r.message);
       }
       // stage 1 success
       return userAuthToken;
     })
-    .catch(function(err) {
-      _this.log(err);
+    .catch(err => {
+      this.log(err);
       throw err;
     });
   }
@@ -349,23 +334,22 @@ class GpgAuthController extends CliController {
    * @returns {Promise.<T>}
    * @private
    */
-  _stage2 (userAuthToken) {
-    var _this = this;
-    return _this.post({
-      url: _this.URL_LOGIN,
+  _stage2(userAuthToken) {
+    return this.post({
+      url: this.URL_LOGIN,
       form: {
-        'data[gpg_auth][keyid]': _this.user.privateKey.fingerprint,
-        'data[gpg_auth][user_token_result]' : userAuthToken
+        'data[gpg_auth][keyid]': this.user.privateKey.fingerprint,
+        'data[gpg_auth][user_token_result]': userAuthToken
       }
-    }).then(function(response){
+    }).then(response => {
       // perform protocol health checks on server response
-      var r = _this._serverResponseHealthCheck('stage2', response);
-      if(r instanceof Error) {
+      const r = this._serverResponseHealthCheck('stage2', response);
+      if (r instanceof Error) {
         throw new Error(r.message);
       }
       return response;
-    }).catch(function(err) {
-      _this.log(err);
+    }).catch(err => {
+      this.log(err);
       throw err;
     });
   }

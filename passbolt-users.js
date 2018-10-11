@@ -22,7 +22,7 @@ program
 
 var userController = new UserController(program, process.argv);
 userController
-  .login()
+  .loginIfNeeded()
   .then(function(){
     return userController.index();
   })

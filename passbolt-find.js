@@ -4,11 +4,9 @@
  * @copyright (c) 2018 Passbolt SARL
  * @licence AGPL-3.0 http://www.gnu.org/licenses/agpl-3.0.en.html
  */
-"use strict";
-
-var program = require('commander');
-var ResourceController = require('./app/controllers/resourceController.js');
-var ResourceIndexView = require('./app/views/resources/index.js');
+const program = require('commander');
+const ResourceController = require('./app/controllers/resourceController.js');
+const ResourceIndexView = require('./app/views/resources/index.js');
 
 /**
  * Index.js
@@ -20,14 +18,14 @@ program
   .option('-v, --verbose', 'Display additional debug information')
   .parse(process.argv);
 
-var resourceController = new ResourceController(program, process.argv);
+const resourceController = new ResourceController(program, process.argv);
 resourceController
-  .login()
+  .loginIfNeeded()
   .then(function(){
     return resourceController.index();
   })
   .then(function(data) {
-    var view = new ResourceIndexView(data);
+    const view = new ResourceIndexView(data);
     view.render();
     process.exit(0);
   })

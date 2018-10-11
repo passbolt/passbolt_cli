@@ -48,7 +48,7 @@ switch (action) {
   case 'login':
   default:
     gpgAuth
-      .login()
+      .loginIfNeeded()
       .then(function(){
         process.exit(0);
       });

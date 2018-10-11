@@ -5,12 +5,11 @@
  * @licence AGPL-3.0 http://www.gnu.org/licenses/agpl-3.0.en.html
  */
 
-"use strict";
-var AppView = require('../appView.js');
+
+const AppView = require('../appView.js');
 
 class GetView extends AppView {
-
-  constructor (data) {
+  constructor(data) {
     super();
     this.data = data;
   }

@@ -22,7 +22,7 @@ program
 
 var resourceController = new ResourceController(program, process.argv);
 resourceController
-  .login()
+  .loginIfNeeded()
   .then(function(){
     return resourceController.view(program.args[0]);
   })
