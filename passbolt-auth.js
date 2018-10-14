@@ -33,6 +33,7 @@ switch (action) {
     gpgAuth
       .logout()
       .then(function(){
+        console.log('logged out');
         process.exit(0);
       });
     break;

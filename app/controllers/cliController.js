@@ -13,10 +13,10 @@ class CliController extends Controller {
    */
   constructor(program) {
     super(program);
-    this.prompt = prompt;
-    this.prompt.colors = false;
-    this.prompt.message = '';
-    this.prompt.delimiter = ': ';
+    this._prompt = prompt;
+    this._prompt.colors = false;
+    this._prompt.message = '';
+    this._prompt.delimiter = ': ';
   }
 
   /**
@@ -43,6 +43,23 @@ class CliController extends Controller {
       this.log(error);
     }
     process.exit(1);
+  }
+
+  /**
+   * Capture data from command line
+   * @param schema
+   * @returns {Promise<any>}
+   */
+  async prompt(schema) {
+    return new Promise((resolve, reject) => {
+      this._prompt.start();
+      this._prompt.get(schema, function (err, result) {
+        if (err) {
+          return reject(err);
+        }
+        return resolve(result);
+      });
+    });
   }
 }
 

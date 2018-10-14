@@ -12,7 +12,6 @@ class AppController extends GpgAuthController {
   /**
    * Constructor
    * @param program
-   * @param argv
    */
   constructor(program) {
     super(program);
@@ -28,19 +27,20 @@ class AppController extends GpgAuthController {
 
   /**
    * Index Action - Find and filter
-   * @returns {Promise.<T>}
+   * @returns {Promise}
    */
-  index() {
+  async index() {
     const url = `${this.URL_BASE}.json?api-version=v1`;
     const request  = {
       url,
       jar: this.cookieJar
     };
-    return this.get(request)
-    .then(response => this.__handleServerResponse(response))
-    .catch(err => {
-      this.error(err);
-    });
+    const response = await this.get(request);
+    try {
+      return this._parseResponse(response);
+    } catch(error) {
+      this.error(error);
+    }
   }
 
   /**
@@ -49,7 +49,7 @@ class AppController extends GpgAuthController {
    * @param options
    * @returns {Promise<any>}
    */
-  view(id, options) {
+  async view(id, options) {
     // Check if this is a valid UUID
     if (!validate.isUUID(id)) {
       this.error(i18n.__(`This is not a valid UUID: ${id}`));
@@ -65,33 +65,12 @@ class AppController extends GpgAuthController {
       jar: this.cookieJar
     };
 
-    return this.get(request)
-    .then(response => this.__handleServerResponse(response))
-    .catch(err => {
-      this.error(err);
-    });
-  }
-
-  /**
-   * Server response handler
-   * @param response
-   * @returns {*}
-   * @private
-   */
-  __handleServerResponse(response) {
-    let result;
     try {
-      result = JSON.parse(response.body);
-    } catch (syntaxError) {
-      this.log(response.body, 'verbose');
-      this.error(`${i18n.__('Error')} ${response.statusCode} ${i18n.__('could not parse server response.')}`);
-      return;
+      const response = await this.get(request);
+      return this._parseResponse(response)
+    } catch(error) {
+      this.error(error);
     }
-    if (response.statusCode === 200 && result.header.url.startsWith('/mfa')) {
-      this.error(`${i18n.__('Error')} ${response.statusCode} ${i18n.__('MFA required.')}`);
-      return;
-    }
-    return result;
   }
 }
 
