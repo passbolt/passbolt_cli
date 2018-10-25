@@ -184,10 +184,15 @@ INNhsjl+27LCiCNmH8RNvPce
 ## Putting it all together
 
 Of course you can chain and pipe things up like:
+
 ```
-$ passbolt get $(passbolt find | grep inkscape | awk '{print $6}') > secret.gpg; gpg --decrypt secret.gpp
+$ passbolt get $(passbolt find  | awk '/inkscape/ { print $NF }') | gpg -q --no-tty 
 ```
 
+```
+-q and --no-tty 
+```
+are optional and ensures that only the password is printed.
 ## Runnning the tests
 
 ```
