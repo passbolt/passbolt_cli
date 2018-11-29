@@ -4,18 +4,17 @@
  * @copyright (c) 2018 Passbolt SARL
  * @licence AGPL-3.0 http://www.gnu.org/licenses/agpl-3.0.en.html
  */
-const CliController = require('./cliController.js');
+const MfaController = require('./mfaController.js');
 const Compat = require('../lib/phpjs.js');
 const CookieStore = require('tough-cookie-file-store');
 const Crypto = require('../models/crypto.js');
-const Domain = require('../models/domain.js');
 const GpgAuthToken = require('../models/gpgAuthToken.js');
 const GpgAuthHeader = require('../models/gpgAuthHeader.js');
 const i18n = require('../models/i18n.js');
 const path = require('path');
 const User = require('../models/user.js');
 
-class GpgAuthController extends CliController {
+class GpgAuthController extends MfaController {
   /**
    * Constructor
    */
@@ -35,7 +34,6 @@ class GpgAuthController extends CliController {
     this.URL_CHECKSESSION = `${baseUrl}/checkSession.json`;
     this.URL_LOGIN = `${baseUrl}/login.json`;
     this.URL_LOGOUT = `${baseUrl}/logout`;
-    this.URL_MFA_VERIFY_TOTP = `${this.domain.url}/mfa/verify/totp.json?api-version=v2`;
 
     // Session cookie
     this.COOKIE_FILE = `${this.appDir}/app/tmp/cookie.json`;
@@ -101,8 +99,8 @@ class GpgAuthController extends CliController {
     }
 
     // User is already logged in but mfa required
-    if (this.mfaRequired(response)) {
-      await this.mfa();
+    if (this.isMfaRequired(response)) {
+      await this.mfaVerify();
       return true;
     }
 
@@ -112,36 +110,10 @@ class GpgAuthController extends CliController {
 
     // User is logged in but mfa required
     response = await this.checkStatus();
-    if (this.mfaRequired(response)) {
-      await this.mfa();
+    if (this.isMfaRequired(response)) {
+      await this.mfaVerify();
       return true;
     }
-  }
-
-  async mfa() {
-    const input = await this.prompt({
-      properties: {
-        otp: {
-          pattern: /^[0-9]{6}$/,
-          message: 'OTP must be a six digit number.',
-          required: true
-        }
-      }
-    });
-    const crsfToken = await this.getCsrfToken();
-    const response = await this.post({
-      url: this.URL_MFA_VERIFY_TOTP,
-      jar: this.cookieJar,
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-        'X-CSRF-Token': crsfToken
-      },
-      form: {
-        'otp': input.otp,
-      }
-    });
-
-    const body = this._parseResponse(response);
   }
 
   async getCsrfToken() {
@@ -160,17 +132,10 @@ class GpgAuthController extends CliController {
     });
   }
 
-  mfaRequired(response) {
-    if (response.statusCode === 403) {
-      return true;
-      const body = this._parseResponse(response);
-      if(body.header.url.startsWith('/mfa/verify')) {
-        return true;
-      }
-    }
-    return false;
-  }
-
+  /**
+   * Login action
+   * @returns {Promise<boolean>}
+   */
   async login() {
     try {
       await this.verify();
@@ -251,12 +216,6 @@ class GpgAuthController extends CliController {
       });
     } else {
       this.user = new User();
-    }
-
-    if (program.domain) {
-      this.domain = program.domain;
-    } else {
-      this.domain = new Domain();
     }
 
     if (program.passphrase) {
