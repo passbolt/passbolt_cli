@@ -53,7 +53,7 @@ class CliController extends Controller {
   async prompt(schema) {
     return new Promise((resolve, reject) => {
       this._prompt.start();
-      this._prompt.get(schema, function (err, result) {
+      this._prompt.get(schema, (err, result) => {
         if (err) {
           return reject(err);
         }

@@ -38,7 +38,7 @@ class AppController extends GpgAuthController {
     const response = await this.get(request);
     try {
       return this._parseResponse(response);
-    } catch(error) {
+    } catch (error) {
       this.error(error);
     }
   }
@@ -67,8 +67,8 @@ class AppController extends GpgAuthController {
 
     try {
       const response = await this.get(request);
-      return this._parseResponse(response)
-    } catch(error) {
+      return this._parseResponse(response);
+    } catch (error) {
       this.error(error);
     }
   }

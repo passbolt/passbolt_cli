@@ -11,7 +11,6 @@ const i18n = require('./i18n.js');
  * The class that deals with GPGAuth Headers.
  */
 class GpgAuthHeader extends Model {
-
   /**
    * Validate the GPGAuth custom HTTP headers of the server response for a given stage
    * @param stage

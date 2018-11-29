@@ -64,7 +64,7 @@ class GpgAuthController extends MfaController {
         url: this.URL_CHECKSESSION,
         jar: this.cookieJar
       });
-    } catch(error) {
+    } catch (error) {
       this.error(error);
       return true;
     }
@@ -163,7 +163,7 @@ class GpgAuthController extends MfaController {
       this._serverResponseHealthCheck('logout', response);
       this._clearCookie();
       return true;
-    } catch(error) {
+    } catch (error) {
       this.error(error);
       return false;
     }
@@ -259,7 +259,7 @@ class GpgAuthController extends MfaController {
     // Check if the headers are correct
     try {
       GpgAuthHeader.validateByStage(step, response.headers);
-    } catch(error) {
+    } catch (error) {
       this.log(error.message, 'verbose');
       throw new Error(i18n.__('The server was unable to respect the authentication protocol.'));
     }
@@ -279,7 +279,7 @@ class GpgAuthController extends MfaController {
       this._serverResponseHealthCheck('verify', response);
       token = response.headers['x-gpgauth-verify-response'];
       GpgAuthToken.validate('token', token);
-    } catch(error) {
+    } catch (error) {
       console.log(error.message, 'verbose');
       throw new Error(i18n.__('Error: GPGAuth verify step failed. Maybe your user does not exist or have been deleted.'));
     }

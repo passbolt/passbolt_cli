@@ -10,7 +10,6 @@ const Config = require('../models/config.js');
 const i18n = require('../models/i18n.js');
 
 class MfaController extends CliController {
-
   /**
    * Constructor
    * @param program
@@ -37,18 +36,18 @@ class MfaController extends CliController {
     let required = false;
     if (response.statusCode === 403) {
       const body = this._parseResponse(response);
-      if(body.header.url.startsWith('/mfa/verify')) {
+      if (body.header.url.startsWith('/mfa/verify')) {
         required = true;
         const serverProviders = this._parseResponse(response).body.providers || null;
 
         try {
           this.provider = this.getProvider(serverProviders).toLowerCase();
-        } catch(error) {
+        } catch (error) {
           this.error(error.message);
         }
       }
     }
-    return required
+    return required;
   }
 
   /**
@@ -71,7 +70,7 @@ class MfaController extends CliController {
 
     if (response.statusCode !== 200) {
       this.log(JSON.parse(response.body), 'verbose');
-      let msg = `${i18n.__('There was a problem with MFA authentication.')} (HTTP Code:${response.statusCode})\n`;
+      const msg = `${i18n.__('There was a problem with MFA authentication.')} (HTTP Code:${response.statusCode})\n`;
       this.error(msg);
     }
   }
@@ -87,7 +86,7 @@ class MfaController extends CliController {
       throw new Error('No MFA provider found. Aborting.');
     }
     const userProviders = this.getProvidersFromUserConfig();
-    let provider, serverProvider;
+    let provider; let serverProvider;
     for (serverProvider in serverProviders) {
       if (serverProviders.hasOwnProperty(serverProvider)) {
         if (serverProvider !== 'duo' && userProviders.includes(serverProvider)) {
@@ -97,7 +96,7 @@ class MfaController extends CliController {
       }
     }
     if (!provider) {
-      let msg = i18n.__('No supported MFA provider found in config. Please setup an additional provider using passbolt web client.');
+      const msg = i18n.__('No supported MFA provider found in config. Please setup an additional provider using passbolt web client.');
       throw new Error(msg);
     }
     return provider;
@@ -116,11 +115,11 @@ class MfaController extends CliController {
     } else {
       userProviders = config.mfa.providers;
       if (!Array.isArray(userProviders) || userProviders.length === 0) {
-        let msg = i18n.__('No supported MFA provider found in user config. Please setup MFA provider preferences.');
+        const msg = i18n.__('No supported MFA provider found in user config. Please setup MFA provider preferences.');
         this.error(msg);
       }
       if (userProviders.length === 1 && userProviders[0].toLowerCase() === 'duo') {
-        let msg = i18n.__('Duo is not a supported MFA provider. Please edit MFA provider preferences to include more providers.');
+        const msg = i18n.__('Duo is not a supported MFA provider. Please edit MFA provider preferences to include more providers.');
         this.error(msg);
       }
       for (let i = 0; i < userProviders.length; i++) {
