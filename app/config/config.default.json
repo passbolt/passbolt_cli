@@ -13,6 +13,9 @@
       "fingerprint": "same here, a sha1"
     }
   },
+  "mfa": {
+    "providers": ["yubikey","totp"]
+  },
   "agentOptions": {
     "rejectUnauthorized": true
   }
