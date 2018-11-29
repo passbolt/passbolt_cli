@@ -93,11 +93,22 @@ with the certificate (authority, not matching names, etc).
 
 Please [review other options](https://github.com/request/request#using-optionsagentoptions) 
 that allow finer and safer control for self signed certificate, see. 
-
 ```
   "agentOptions": {
     "rejectUnauthorized": false
   }
+```
+
+### 3. Mfa preferences
+
+It is possible to set the order of preference for MFA providers if MFA is setup and requested.
+With this configuration if Yubikey and TOTP providers are both enabled for the organization and the user,
+yubikey OTP will be used as MFA. If it is not enabled for the organization for example, it will fall back
+to Totp.
+```
+  "mfa": {
+    "providers": ["yubikey","totp"]
+  },
 ```
 
 # What commands do to you support?
@@ -121,7 +132,6 @@ Right now the basics, only authentication and read operations.
     -h, --help     output usage information
     -V, --version  output the version number
 ```
-
 
 ## Authentication
 Authentication is based on [GPGAuth](https://www.passbolt.com/help/tech/auth), so it uses your private key
