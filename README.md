@@ -206,7 +206,7 @@ are optional and ensures that only the password is printed.
 ## Runnning the tests
 
 ```
-$ [sudo] npm install -g mocha
+$ [sudo] npm install -g mocha chai
 $ mocha tests
 ```
 
