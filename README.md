@@ -203,7 +203,7 @@ $ passbolt get $(passbolt find  | awk '/inkscape/ { print $NF }') | gpg -q --no-
 -q and --no-tty 
 ```
 are optional and ensures that only the password is printed.
-## Runnning the tests
+## Running the tests
 
 ```
 $ [sudo] npm install -g mocha
