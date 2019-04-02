@@ -1,7 +1,7 @@
 /**
  * Model base class
  *
- * @copyright (c) 2018 Passbolt SARL
+ * @copyright (c) 2019 Passbolt SA
  * @licence AGPL-3.0 http://www.gnu.org/licenses/agpl-3.0.en.html
  */
 const i18n = require('./i18n.js');
