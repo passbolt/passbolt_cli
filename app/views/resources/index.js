@@ -9,9 +9,14 @@
 const AppView = require('../appView.js');
 
 class ResourceIndexView extends AppView {
-  constructor(data) {
+  constructor(data, columns) {
     super();
     this.data = [];
+
+    this.columns = ['name', 'username', 'uri', 'modified', 'uuid'];
+    if (Array.isArray(columns) && columns.length) {
+      this.columns = columns;
+    }
 
     const max = data.body.length;
     let i = 0;
@@ -20,11 +25,12 @@ class ResourceIndexView extends AppView {
     for (;i < max; i++) {
       r = data.body[i];
       this.data[i] = {
-        'Name': r.Resource.name,
-        'Username': r.Resource.username,
-        'URI': r.Resource.uri,
-        'Modified': r.Resource.modified,
-        'UUID': r.Resource.id
+        'name': r.Resource.name,
+        'username': r.Resource.username,
+        'uri': r.Resource.uri,
+        'created': r.Resource.created,
+        'modified': r.Resource.modified,
+        'uuid': r.Resource.id
       };
     }
   }
@@ -35,6 +41,7 @@ class ResourceIndexView extends AppView {
     } else {
       console.log(this.columnify(this.data, {
         minWidth: 20,
+        columns: this.columns,
         config: {
           'username': {maxWidth: 64}
         }

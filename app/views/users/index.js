@@ -9,9 +9,14 @@
 const AppView = require('../appView.js');
 
 class UserIndexView extends AppView {
-  constructor(data) {
+  constructor(data, columns) {
     super();
     this.data = [];
+    this.columns = ['first-name', 'last-name', 'username', 'fingerprint', 'uuid'];
+    if (Array.isArray(columns) && columns.length) {
+      this.columns = columns;
+    }
+
     const max = data.body.length;
     let i = 0;
     let u;
@@ -20,11 +25,13 @@ class UserIndexView extends AppView {
       u = data.body[i];
 
       this.data[i] = {
-        'first name': u.Profile.first_name,
-        'last name': u.Profile.last_name,
+        'first-name': u.Profile.first_name,
+        'last-name': u.Profile.last_name,
         'username': u.User.username,
         'fingerprint': u.Gpgkey ? u.Gpgkey.fingerprint : '',
-        'UUID': u.User.id
+        'uuid': u.User.id,
+        'created': u.User.created,
+        'modified': u.User.modified,
       };
     }
   }
@@ -32,7 +39,7 @@ class UserIndexView extends AppView {
   render() {
     console.log(this.columnify(this.data, {
       minWidth: 20,
-      columns: ['first name', 'last name', 'username', 'fingerprint', 'UUID'],
+      columns: this.columns,
       config: {
         'username': {maxWidth: 64}
       }

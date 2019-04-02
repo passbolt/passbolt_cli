@@ -51,7 +51,28 @@ cd app/config
 cp config.default.json config.json
 ```
 
+Open the newly created config file and set the details.
 You can look at the examples in the config folder.
+
+# Configuration
+## Domain config
+You need to setup the domain `baseUrl`, and the associated key `fingerprint`
+You also need to make sure the server public key is in your GnuPG keyring.
+
+If you do not know the domain public key or fingerprint you can get them like follow
+```
+$ passbolt keyring server-public-key --display-fingerprint
+$ passbolt keyring server-public-key --display-armored
+```
+
+## User config
+You will need to download your private key from the passbolt interface, for example
+during the backup step of the setup, or once logged on your profile workspace.
+
+Import this key in your GnuPG keyring and get a hold of the fingerprint.
+Set all the information in the `user` section of the configuration file.
+
+## Example configuration
 If you are using a default passbolt server instance with Selenium tests data installed then it will work out the box
 with Ada for example:
 ```
@@ -76,16 +97,16 @@ with Ada for example:
 ## Additional settings
 Some additional options are available:
 
-### 1. Gpg trust:
+###  Gpg trust
 
-Do not require ultimate trust for server public key
+You can define the trust model when encrypting:
 ```
   "gpg" : {
     "trust": "always"
   }
 ```
 
-### 2. Working with self signed certificates
+### Working with self signed certificates
 
 By default SSL request will be refused for a connection which is not authorized with the list of 
 supplied CAs. *For testing purposes* you can set rejectUnauthorized to false, to ignore issues 
@@ -99,7 +120,7 @@ that allow finer and safer control for self signed certificate, see.
   }
 ```
 
-### 3. Mfa preferences
+### Mfa preferences
 
 It is possible to set the order of preference for MFA providers if MFA is setup and requested.
 With this configuration if Yubikey and TOTP providers are both enabled for the organization and the user,
@@ -123,6 +144,7 @@ Right now the basics, only authentication and read operations.
     auth        Authentication actions, login or logout
     get         View the OpenPGP data block of a given resource
     find        Find one or more resources
+    keyring     Synchronize public keys
     users       List all users
     user        List information for a given user
     help [cmd]  display help for [cmd]
@@ -164,6 +186,11 @@ Enlightenment                   efl                  https://www.enlightenment.o
 free software foundation europe fsfe                 https://fsfe.org/index.en.html          2016-05-15 16:04:49  31bf093f-dd27-391d-ae9d-f511ef41dd12
 ftp                             user                 ftp://192.168.1.1                       2016-05-15 16:04:49  4a2f98e8-b326-3384-aa2b-c3c9a81be3f7
 ...
+```
+Your can select the columns you want to display using the `--columns` arguments.
+
+```
+$ passbolt find --columns=name,uuid
 ```
 
 ## Get the encrypted password
@@ -210,16 +237,21 @@ $ [sudo] npm install -g mocha
 $ mocha tests
 ```
 
-
 ## List the users
 ```
 $ passbolt users
 
-FIRST NAME           LAST NAME            USERNAME              FINGERPRINT                              UUID
+FIRST-NAME           LAST-NAME            USERNAME              FINGERPRINT                              UUID
 Frances              Allen                frances@passbolt.com  98DA33350692F21BD5F83A17E8DC5617477FB14C 1c137bd7-2838-3c3d-a021-d2986d9126f5
 Kathleen             Antonelli            kathleen@passbolt.com 14D07AFFDE916BC904F17AFB4D203642A73AE279 201b442c-d6ca-3ee6-a443-ce669ca0ec6e
 Jean                 Bartik               jean@passbolt.com     8F758E3BDD8445361A8A6AD073BAC28524AA1193 7c7afd29-1b98-3c3e-ae55-adedc333fb4b
 ...
+```
+
+Your can select the columns you want to display using the `--columns` arguments.
+
+```
+$ passbolt users --columns=created,username
 ```
 
 ## Find a user

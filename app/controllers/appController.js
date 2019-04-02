@@ -27,7 +27,7 @@ class AppController extends GpgAuthController {
 
   /**
    * Index Action - Find and filter
-   * @returns {Promise}
+   * @returns {Promise<*>}
    */
   async index() {
     const url = `${this.URL_BASE}.json?api-version=v1`;
@@ -47,7 +47,7 @@ class AppController extends GpgAuthController {
    * View Action
    * @param id
    * @param options
-   * @returns {Promise<any>}
+   * @returns {Promise<*>}
    */
   async view(id, options) {
     // Check if this is a valid UUID

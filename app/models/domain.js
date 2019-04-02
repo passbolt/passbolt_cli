@@ -83,7 +83,13 @@ class Domain extends Model {
       return new Error(i18n.__("Can not read domain url from file"));
     }
     this._url = config.domain.baseUrl;
-    this.publicKey = new Key(config.domain.publicKey);
+    if (config.domain.publicKey !== undefined) {
+      try {
+        this.publicKey = new Key(config.domain.publicKey);
+      } catch (Error) {
+        console.warn('Invalid public key fingerprint set for the server.')
+      }
+    }
     return true;
   }
 }
