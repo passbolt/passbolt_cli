@@ -23,6 +23,11 @@ This repository is a command line interface for passbolt API.
 It allows a user to interact with the passbolt server without the user of web extension.
 Currently works as a read only access only.
 
+# Prerequisite
+In order to use passbolt CLI you will need:
+- Gnupg v2
+- Nodejs LTS or more recent
+
 # How to get started?
 
 Copy the repository
