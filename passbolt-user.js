@@ -1,36 +1,37 @@
 /**
- * Passbolt User Get
+ * Passbolt ~ Open source password manager for teams
+ * Copyright (c) Passbolt SA (https://www.passbolt.com)
  *
- * @copyright (c) 2018 Passbolt SARL
- * @licence AGPL-3.0 http://www.gnu.org/licenses/agpl-3.0.en.html
+ * Licensed under GNU Affero General Public License version 3 of the or any later version.
+ * For full copyright and license information, please see the LICENSE.txt
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright     Copyright (c) Passbolt SA (https://www.passbolt.com)
+ * @license       https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link          https://www.passbolt.com Passbolt(tm)
  */
-"use strict";
-
-var program = require('commander');
-var UserController = require('./app/controllers/userController.js');
-var UserGetView = require('./app/views/users/get.js');
+const program = require('commander');
+const UserController = require('./app/controllers/userController.js');
+const UserGetView = require('./app/views/users/get.js');
 
 /**
- * Index.js
+ * User get
  */
-program
-  .usage('[options] <uuid>', 'Display the info for a given user')
-  .option('-u, --fingerprint <fingerprint>', 'The user key fingerprint to authenticate with')
-  .option('-p, --passphrase <passphrase>', 'The key passphrase')
-  .option('-v, --verbose', 'Display additional debug information')
-  .parse(process.argv);
+(async function () {
+  program
+    .usage('[options] <uuid>', 'Display the info for a given user')
+    .option('-u, --fingerprint <fingerprint>', 'The user key fingerprint to authenticate with')
+    .option('-p, --passphrase <passphrase>', 'The key passphrase')
+    .option('-v, --verbose', 'Display additional debug information')
+    .parse(process.argv);
 
-var userController = new UserController(program, process.argv);
-userController
-  .loginIfNeeded()
-  .then(function(){
-    return userController.view(program.args[0]);
-  })
-  .then(function(data) {
-    var view = new UserGetView(data);
+  const userController = new UserController(program, process.argv);
+  await userController.loginIfNeeded();
+  try {
+    const data = await userController.view(program.args[0]);
+    const view = new UserGetView(data);
     view.render();
-    process.exit(0);
-  })
-  .catch(function(err) {
+  } catch(err) {
     userController.error(err);
-  });
+  }
+})();

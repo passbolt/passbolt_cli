@@ -1,57 +1,48 @@
 /**
- * Passbolt GPG Authentication Command
+ * Passbolt ~ Open source password manager for teams
+ * Copyright (c) Passbolt SA (https://www.passbolt.com)
  *
- * @copyright (c) 2018 Passbolt SARL
- * @licence AGPL-3.0 http://www.gnu.org/licenses/agpl-3.0.en.html
+ * Licensed under GNU Affero General Public License version 3 of the or any later version.
+ * For full copyright and license information, please see the LICENSE.txt
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright     Copyright (c) Passbolt SA (https://www.passbolt.com)
+ * @license       https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link          https://www.passbolt.com Passbolt(tm)
  */
-"use strict";
-
-var program = require('commander');
-var GpgAuthController = require('./app/controllers/gpgAuthController.js');
+const program = require('commander');
+const GpgAuthController = require('./app/controllers/gpgAuthController.js');
 
 /**
- * Index.js
+ * Passbolt GPG Authentication Command
  */
-program
-  .usage('[options] [login|logout]', 'Authentication actions, login or logout')
-  .option('-u, --fingerprint <fingerprint>', 'The user key fingerprint to authenticate with')
-  .option('-p, --passphrase <passphrase>', 'The key passphrase')
-  .option('-v, --verbose', 'Display additional debug information')
-  .option('-f, --force', 'Force authentication even if not needed')
-  .parse(process.argv);
+(async function() {
+  program
+    .usage('[options] [login|logout]', 'Authentication actions, login or logout')
+    .option('-u, --fingerprint <fingerprint>', 'The user key fingerprint to authenticate with')
+    .option('-p, --passphrase <passphrase>', 'The key passphrase')
+    .option('-v, --verbose', 'Display additional debug information')
+    .option('-f, --force', 'Force authentication even if not needed')
+    .parse(process.argv);
 
-// Check what action was given or use login as default
-var action = 'login';
-if (program.args.length) {
-  action = program.args[0];
-}
+  // Check what action was given or use login as default
+  let action = 'login';
+  if (program.args.length) {
+    action = program.args[0];
+  }
 
-var gpgAuth = new GpgAuthController(program, process.argv);
-
-switch (action) {
-  case 'logout':
-    gpgAuth
-      .logout()
-      .then(function(){
-        console.log('logged out');
-        process.exit(0);
-      });
-    break;
-
-  case 'check':
-    gpgAuth
-      .check()
-      .then(function(){
-        process.exit(0);
-      });
-    break;
-
-  case 'login':
-  default:
-    gpgAuth
-      .loginIfNeeded()
-      .then(function(){
-        process.exit(0);
-      });
-    break;
-}
+  const gpgAuth = new GpgAuthController(program, process.argv);
+  switch (action) {
+    case 'logout':
+      await gpgAuth.logout();
+      console.log('logged out');
+      break;
+    case 'check':
+      await gpgAuth.check();
+      break;
+    case 'login':
+    default:
+      await gpgAuth.loginIfNeeded();
+      break;
+  }
+})();

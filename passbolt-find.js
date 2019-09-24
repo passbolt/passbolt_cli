@@ -1,34 +1,37 @@
 /**
- * Passbolt Search Command
+ * Passbolt ~ Open source password manager for teams
+ * Copyright (c) Passbolt SA (https://www.passbolt.com)
  *
- * @copyright (c) 2018 Passbolt SARL
- * @licence AGPL-3.0 http://www.gnu.org/licenses/agpl-3.0.en.html
+ * Licensed under GNU Affero General Public License version 3 of the or any later version.
+ * For full copyright and license information, please see the LICENSE.txt
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright     Copyright (c) Passbolt SA (https://www.passbolt.com)
+ * @license       https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link          https://www.passbolt.com Passbolt(tm)
  */
 const program = require('commander');
 const ResourceController = require('./app/controllers/resourceController.js');
 const ResourceIndexView = require('./app/views/resources/index.js');
 
 /**
- * Index.js
+ * Passbolt Search Command
  */
-program
-  .usage('[options]', 'Search and list resources')
-  .option('-u, --fingerprint <fingerprint>', 'The user key fingerprint to authenticate with')
-  .option('-p, --passphrase <passphrase>', 'The key passphrase')
-  .option('-v, --verbose', 'Display additional debug information')
-  .parse(process.argv);
+(async function () {
+  program
+    .usage('[options]', 'Search and list resources')
+    .option('-u, --fingerprint <fingerprint>', 'The user key fingerprint to authenticate with')
+    .option('-p, --passphrase <passphrase>', 'The key passphrase')
+    .option('-v, --verbose', 'Display additional debug information')
+    .parse(process.argv);
 
-const resourceController = new ResourceController(program, process.argv);
-resourceController
-  .loginIfNeeded()
-  .then(function(){
-    return resourceController.index();
-  })
-  .then(function(data) {
+  const resourceController = new ResourceController(program, process.argv);
+  await resourceController.loginIfNeeded();
+  try {
+    let data = await resourceController.index();
     const view = new ResourceIndexView(data);
     view.render();
-    process.exit(0);
-  })
-  .catch(function(err) {
+  } catch(err) {
     resourceController.error(err);
-  });
+  }
+})();
