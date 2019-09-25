@@ -28,6 +28,11 @@ This repository is a command line interface for passbolt API.
 It allows a user to interact with the passbolt server without the user of web extension.
 Currently works as a read only access only.
 
+# Prerequisite
+In order to use passbolt CLI you will need:
+- Gnupg v2
+- Nodejs LTS or more recent
+
 # How to get started?
 
 Copy the repository
@@ -66,8 +71,9 @@ You also need to make sure the server public key is in your GnuPG keyring.
 
 If you do not know the domain public key or fingerprint you can get them like follow
 ```
-$ passbolt keyring server-public-key --display-fingerprint
-$ passbolt keyring server-public-key --display-armored
+$ passbolt server-key --domain=https://www.passbolt.test > app/config/server.key
+$ gpg --import app/config/server.key
+$ passbolt server-key --fingerprint --domain=https://www.passbolt.test
 ```
 
 ## User config
@@ -145,14 +151,13 @@ Right now the basics, only authentication and read operations.
 
 
   Commands:
-
-    auth        Authentication actions, login or logout
-    get         View the OpenPGP data block of a given resource
-    find        Find one or more resources
-    keyring     Synchronize public keys
-    users       List all users
-    user        List information for a given user
-    help [cmd]  display help for [cmd]
+    auth           Authentication actions, login or logout
+    get            View the OpenPGP data block of a given resource
+    find           Find one or more resources
+    server-key     Fetch the server public key
+    users          List all users
+    user           View one user details
+    help [cmd]     display help for [cmd]
 
   Options:
 
@@ -193,6 +198,7 @@ ftp                             user                 ftp://192.168.1.1          
 ...
 ```
 Your can select the columns you want to display using the `--columns` arguments.
+Non existing collumns will be ignored.
 
 ```
 $ passbolt find --columns=name,uuid
@@ -235,7 +241,7 @@ $ passbolt get $(passbolt find  | awk '/inkscape/ { print $NF }') | gpg -q --no-
 -q and --no-tty 
 ```
 are optional and ensures that only the password is printed.
-## Runnning the tests
+## Running the tests
 
 ```
 $ [sudo] npm install -g mocha

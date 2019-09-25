@@ -1,20 +1,28 @@
 /**
- * Domain Model
+ * Passbolt ~ Open source password manager for teams
+ * Copyright (c) Passbolt SA (https://www.passbolt.com)
  *
- * @copyright (c) 2019 Passbolt SA
- * @licence AGPL-3.0 http://www.gnu.org/licenses/agpl-3.0.en.html
+ * Licensed under GNU Affero General Public License version 3 of the or any later version.
+ * For full copyright and license information, please see the LICENSE.txt
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright     Copyright (c) Passbolt SA (https://www.passbolt.com)
+ * @license       https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link          https://www.passbolt.com Passbolt(tm)
  */
 const Model = require('./model.js');
+const Config = require('./config.js');
 const i18n = require('./i18n.js');
 
 /**
  * Domain model constructor
  */
 class Key extends Model {
+
   constructor(key) {
     super();
-    if (key.fingerprint !== undefined) {
-      this.fingerprint = key.fingerprint.toUpperCase().replace(/\s/g, '');
+    if(key.fingerprint !== undefined) {
+      this.fingerprint = key.fingerprint;
     }
   }
 
@@ -24,13 +32,14 @@ class Key extends Model {
    * @param value string
    * @return boolean true or Error
    */
-  static validate(field, value) {
+  static validate (field, value) {
     switch (field) {
       case 'fingerprint':
-        return (value.match(/[0-9A-F]{40}/g) !== null);
+        break;
       default:
-        return new Error(i18n.__(`No validation defined for field: ${field}`));
+        return new Error(i18n.__('No validation defined for field: ' + field));
     }
+    return true;
   }
 
   /**
@@ -46,8 +55,8 @@ class Key extends Model {
    * @param fingerprint
    */
   set fingerprint(fingerprint) {
-    const result = Key.validate('fingerprint', fingerprint);
-    if (result === true) {
+    let result = Key.validate('fingerprint', fingerprint);
+    if(result === true) {
       this._fingerprint = fingerprint;
       return;
     }

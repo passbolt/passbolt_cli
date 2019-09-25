@@ -1,20 +1,22 @@
 /**
- * Secret View
+ * Passbolt ~ Open source password manager for teams
+ * Copyright (c) Passbolt SA (https://www.passbolt.com)
  *
- * @copyright (c) 2019 Passbolt SA
- * @licence AGPL-3.0 http://www.gnu.org/licenses/agpl-3.0.en.html
+ * Licensed under GNU Affero General Public License version 3 of the or any later version.
+ * For full copyright and license information, please see the LICENSE.txt
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright     Copyright (c) Passbolt SA (https://www.passbolt.com)
+ * @license       https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link          https://www.passbolt.com Passbolt(tm)
  */
-
-
 const AppView = require('../appView.js');
 
 class UserGetView extends AppView {
   constructor(data) {
     super();
     this.data = [];
-
     this.user = data.body;
-
     this.data[0] = {
       'first name': this.user.Profile.first_name,
       'last name': this.user.Profile.last_name,

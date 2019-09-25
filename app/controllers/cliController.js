@@ -1,8 +1,14 @@
 /**
- * Command Line Interface Controller
+ * Passbolt ~ Open source password manager for teams
+ * Copyright (c) Passbolt SA (https://www.passbolt.com)
  *
- * @copyright (c) 2019 Passbolt SA
- * @licence AGPL-3.0 http://www.gnu.org/licenses/agpl-3.0.en.html
+ * Licensed under GNU Affero General Public License version 3 of the or any later version.
+ * For full copyright and license information, please see the LICENSE.txt
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright     Copyright (c) Passbolt SA (https://www.passbolt.com)
+ * @license       https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link          https://www.passbolt.com Passbolt(tm)
  */
 const Controller = require('./controller.js');
 const prompt = require('prompt');
@@ -17,32 +23,6 @@ class CliController extends Controller {
     this._prompt.colors = false;
     this._prompt.message = '';
     this._prompt.delimiter = ': ';
-  }
-
-  /**
-   * Log a message in console
-   * @param msg
-   * @param priority
-   */
-  log(msg, priority) {
-    if (priority === undefined || (priority === 'verbose' && this._verbose)) {
-      console.log(msg);
-    }
-  }
-
-  /**
-   * Handle an error
-   * @param error
-   */
-  error(error) {
-    if (error instanceof Error) {
-      this.log(error.message);
-    } else if (typeof error === 'string') {
-      this.log(error);
-    } else {
-      this.log(error);
-    }
-    process.exit(1);
   }
 
   /**

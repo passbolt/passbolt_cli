@@ -6,6 +6,7 @@ npm-debug.log
 
 # Config
 app/config/config.json
+app/config/*.key
 
 # TMP files
 /app/tmp/

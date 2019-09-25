@@ -1,8 +1,14 @@
 /**
- * Authentication Controller
+ * Passbolt ~ Open source password manager for teams
+ * Copyright (c) Passbolt SA (https://www.passbolt.com)
  *
- * @copyright (c) 2019 Passbolt SA
- * @licence AGPL-3.0 http://www.gnu.org/licenses/agpl-3.0.en.html
+ * Licensed under GNU Affero General Public License version 3 of the or any later version.
+ * For full copyright and license information, please see the LICENSE.txt
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright     Copyright (c) Passbolt SA (https://www.passbolt.com)
+ * @license       https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link          https://www.passbolt.com Passbolt(tm)
  */
 const MfaController = require('./mfaController.js');
 const Compat = require('../lib/phpjs.js');
@@ -19,7 +25,14 @@ class GpgAuthController extends MfaController {
    * Constructor
    */
   constructor(program) {
-    super(program);
+    try {
+      super(program);
+    } catch (error) {
+      console.error(error.message);
+      console.error('Make sure you created a valid configuration file in app/config/config.json.');
+      console.error('See app/config/config.default.json for an example.');
+      process.exit(1);
+    }
     try {
       this._parseProgramArg(program);
     } catch (e) {
@@ -48,6 +61,7 @@ class GpgAuthController extends MfaController {
    */
   async checkStatus() {
     if (this.force) {
+      this.log('Clearing cookies', 'verbose');
       this._clearCookie();
       return true;
     }

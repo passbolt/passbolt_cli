@@ -1,20 +1,29 @@
 /**
- * User Index View
+ * Passbolt ~ Open source password manager for teams
+ * Copyright (c) Passbolt SA (https://www.passbolt.com)
  *
- * @copyright (c) 2019 Passbolt SA
- * @licence AGPL-3.0 http://www.gnu.org/licenses/agpl-3.0.en.html
+ * Licensed under GNU Affero General Public License version 3 of the or any later version.
+ * For full copyright and license information, please see the LICENSE.txt
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @copyright     Copyright (c) Passbolt SA (https://www.passbolt.com)
+ * @license       https://opensource.org/licenses/AGPL-3.0 AGPL License
+ * @link          https://www.passbolt.com Passbolt(tm)
  */
-
-
 const AppView = require('../appView.js');
 
+/**
+ * User Index View
+ */
 class UserIndexView extends AppView {
   constructor(data, columns) {
     super();
     this.data = [];
-    this.columns = ['first-name', 'last-name', 'username', 'fingerprint', 'uuid'];
+    this.defaultColumns = ['first-name', 'last-name', 'username', 'fingerprint', 'uuid'];
     if (Array.isArray(columns) && columns.length) {
-      this.columns = columns;
+      this.columns = columns.filter(value => this.defaultColumns.includes(value));
+    } else {
+      this.columns = this.defaultColumns;
     }
 
     const max = data.body.length;
