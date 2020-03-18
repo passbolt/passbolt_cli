@@ -33,7 +33,7 @@ const Coercion = require('./app/lib/coercion');
     let data = await resourceController.index();
     const view = new ResourceIndexView(data, program.columns);
     view.render();
-  } catch(err) {
+  } catch (err) {
     resourceController.error(err);
   }
 })();

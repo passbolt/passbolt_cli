@@ -31,7 +31,7 @@ const GetView = require('./app/views/resources/get.js');
     const data = await resourceController.view(program.args[0]);
     const view = new GetView(data);
     view.render();
-  } catch(err) {
+  } catch (err) {
     resourceController.error(err);
   }
 })();

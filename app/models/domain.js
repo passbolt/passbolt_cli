@@ -93,7 +93,7 @@ class Domain extends Model {
       try {
         this.publicKey = new Key(config.domain.publicKey);
       } catch (Error) {
-        console.warn('Invalid public key fingerprint set for the server.')
+        console.warn('Invalid public key fingerprint set for the server.');
       }
     }
     return true;

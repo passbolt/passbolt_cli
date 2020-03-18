@@ -33,14 +33,14 @@ const ServerKeyController = require('./app/controllers/serverKeyController.js');
   let serverKeyController;
   try {
     serverKeyController = new ServerKeyController(program, process.argv);
-  } catch(error) {
+  } catch (error) {
     console.error('Could not fetch server key. Please provide a domain in app/config/config.json or using --domain.');
     process.exit(1);
   }
   let response;
   try {
     response = await serverKeyController.getPublicKey();
-  } catch( error) {
+  } catch ( error) {
     console.error(error.message);
     process.exit(1);
   }

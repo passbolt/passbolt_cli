@@ -31,7 +31,7 @@ const UserGetView = require('./app/views/users/get.js');
     const data = await userController.view(program.args[0]);
     const view = new UserGetView(data);
     view.render();
-  } catch(err) {
+  } catch (err) {
     userController.error(err);
   }
 })();

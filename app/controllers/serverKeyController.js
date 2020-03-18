@@ -21,7 +21,7 @@ class ServerKeyController extends CliController {
   constructor(program) {
     try {
       super(program);
-    } catch(error) {
+    } catch (error) {
       // config loading failed, still try to proceed
       // maybe program.domain is set and valid
     }

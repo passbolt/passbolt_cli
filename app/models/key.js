@@ -11,17 +11,15 @@
  * @link          https://www.passbolt.com Passbolt(tm)
  */
 const Model = require('./model.js');
-const Config = require('./config.js');
 const i18n = require('./i18n.js');
 
 /**
  * Domain model constructor
  */
 class Key extends Model {
-
   constructor(key) {
     super();
-    if(key.fingerprint !== undefined) {
+    if (key.fingerprint !== undefined) {
       this.fingerprint = key.fingerprint;
     }
   }
@@ -32,12 +30,12 @@ class Key extends Model {
    * @param value string
    * @return boolean true or Error
    */
-  static validate (field, value) {
+  static validate(field, value) {
     switch (field) {
       case 'fingerprint':
         break;
       default:
-        return new Error(i18n.__('No validation defined for field: ' + field));
+        return new Error(i18n.__(`No validation defined for field: ${field}`));
     }
     return true;
   }
@@ -55,8 +53,8 @@ class Key extends Model {
    * @param fingerprint
    */
   set fingerprint(fingerprint) {
-    let result = Key.validate('fingerprint', fingerprint);
-    if(result === true) {
+    const result = Key.validate('fingerprint', fingerprint);
+    if (result === true) {
       this._fingerprint = fingerprint;
       return;
     }

@@ -132,7 +132,7 @@ class GpgAuthController extends MfaController {
 
   async getCsrfToken() {
     return new Promise((resolve, reject) => {
-      const domain = this.domain.url.split("://").pop();
+      const domain = new URL(this.domain.url).host;
       const path = '/';
       const key = 'csrfToken';
 
@@ -155,13 +155,20 @@ class GpgAuthController extends MfaController {
       await this.verify();
       const userAuthToken = await this._stage1();
       const response = await this._stage2(userAuthToken);
-      const cookie = this._request.cookie(response.headers['set-cookie'][0]);
-      this.cookieJar.setCookie(cookie, this.domain.url);
+      this.setCookies(response.headers['set-cookie']);
       this.log('GPGAuth you are now logged in', 'verbose');
       return true;
     } catch (error) {
       this.log('GPGAuth Error during login', 'verbose');
       this.error(error);
+    }
+  }
+
+  setCookies(cookies) {
+    let cookie;
+    for (let i = 0; i < cookies.length; i++) {
+      cookie = this._request.cookie(cookies[i]);
+      this.cookieJar.setCookie(cookie, this.domain.url);
     }
   }
 
@@ -358,8 +365,7 @@ class GpgAuthController extends MfaController {
     try {
       // set cookies if needed
       if (response.headers['set-cookie']) {
-        const cookie = this._request.cookie(response.headers['set-cookie'][0]);
-        this.cookieJar.setCookie(cookie, this.domain.url);
+        this.setCookies(response.headers['set-cookie']);
       }
       // parse json body
       body = JSON.parse(response.body);

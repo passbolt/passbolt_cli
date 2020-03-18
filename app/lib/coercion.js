@@ -1,6 +1,6 @@
 // Coercion for application
-let Coercion = {};
-Coercion.list = function (val) {
+const Coercion = {};
+Coercion.list = function(val) {
   return val.split(',');
 };
 
