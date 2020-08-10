@@ -16,7 +16,6 @@ class AppView {
    */
   constructor() {
     this.columnify = require('columnify');
-    this.flatten = require('flat');
   }
 }
 module.exports = AppView;
