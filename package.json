@@ -25,7 +25,7 @@
   "dependencies": {
     "columnify": "^1.5.4",
     "commander": "^2.20.3",
-    "flat": "^4.1.0",
+    "flat": "^5.0.2",
     "gpg": "^0.6.0",
     "jssha": "^2.3.1",
     "prompt": "^1.0.0",
