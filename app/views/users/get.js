@@ -18,11 +18,11 @@ class UserGetView extends AppView {
     this.data = [];
     this.user = data.body;
     this.data[0] = {
-      'first name': this.user.Profile.first_name,
-      'last name': this.user.Profile.last_name,
-      'username': this.user.User.username,
+      'first name': this.user.profile.first_name,
+      'last name': this.user.profile.last_name,
+      'username': this.user.username,
       'fingerprint': this.user.Gpgkey ? this.user.Gpgkey.fingerprint : '',
-      'UUID': this.user.User.id
+      'UUID': this.user.id
     };
   }
 
@@ -35,8 +35,8 @@ class UserGetView extends AppView {
       }
     }));
     console.log('');
-    if (this.user.Gpgkey) {
-      console.log(this.user.Gpgkey.armored_key);
+    if (this.user.gpgkey) {
+      console.log(this.user.gpgkey.armored_key);
     } else {
       console.log('User is not active. No key to display.');
     }

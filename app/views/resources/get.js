@@ -19,7 +19,8 @@ class GetView extends AppView {
   }
 
   render() {
-    console.log(this.data.body.Secret[0].data);
+    //console.log(this.data.body.Secret[0].data);
+    console.log(this.data.body.secrets[0].data);
   }
 }
 module.exports = GetView;

@@ -34,13 +34,13 @@ class UserIndexView extends AppView {
       u = data.body[i];
 
       this.data[i] = {
-        'first-name': u.Profile.first_name,
-        'last-name': u.Profile.last_name,
-        'username': u.User.username,
+        'first-name': u.profile.first_name,
+        'last-name': u.profile.last_name,
+        'username': u.username,
         'fingerprint': u.Gpgkey ? u.Gpgkey.fingerprint : '',
-        'uuid': u.User.id,
-        'created': u.User.created,
-        'modified': u.User.modified,
+        'uuid': u.id,
+        'created': u.created,
+        'modified': u.modified,
       };
     }
   }

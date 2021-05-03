@@ -36,7 +36,7 @@ class AppController extends GpgAuthController {
    * @returns {Promise<*>}
    */
   async index() {
-    const url = `${this.URL_BASE}.json?api-version=v1`;
+    const url = `${this.URL_BASE}.json`;
     const request  = {
       url,
       jar: this.cookieJar
@@ -62,7 +62,7 @@ class AppController extends GpgAuthController {
     }
 
     // Get the record
-    let url = `${this.URL_BASE}/${id}.json?api-version=v1&`;
+    let url = `${this.URL_BASE}/${id}.json?`;
     if (typeof options !== 'undefined') {
       url += options;
     }
@@ -70,7 +70,6 @@ class AppController extends GpgAuthController {
       url,
       jar: this.cookieJar
     };
-
     try {
       const response = await this.get(request);
       return this._parseResponse(response);
