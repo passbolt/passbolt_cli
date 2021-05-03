@@ -21,7 +21,7 @@ class UserGetView extends AppView {
       'first name': this.user.profile.first_name,
       'last name': this.user.profile.last_name,
       'username': this.user.username,
-      'fingerprint': this.user.Gpgkey ? this.user.Gpgkey.fingerprint : '',
+      'fingerprint': this.user.gpgkey ? this.user.gpgkey.fingerprint : '',
       'UUID': this.user.id
     };
   }
