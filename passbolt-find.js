@@ -10,20 +10,21 @@
  * @license       https://opensource.org/licenses/AGPL-3.0 AGPL License
  * @link          https://www.passbolt.com Passbolt(tm)
  */
-const program = require('commander');
+const {Command} = require('commander');
 const ResourceController = require('./app/controllers/resourceController.js');
 const ResourceIndexView = require('./app/views/resources/index.js');
-const Coercion = require('./app/lib/coercion');
+const {list} = require('./app/lib/coercion');
 
 /**
  * Passbolt Search Command
  */
 (async function () {
+  const program = new Command();
   program
     .usage('[options]', 'Search and list resources')
     .option('-u, --fingerprint <fingerprint>', 'The user key fingerprint to authenticate with')
     .option('-p, --passphrase <passphrase>', 'The key passphrase')
-    .option('--columns <items>', 'Coma separated columns to display', Coercion.list)
+    .option('--columns <items>', 'Coma separated columns to display', list)
     .option('-v, --verbose', 'Display additional debug information')
     .parse(process.argv);
 
@@ -31,7 +32,7 @@ const Coercion = require('./app/lib/coercion');
   await resourceController.loginIfNeeded();
   try {
     let data = await resourceController.index();
-    const view = new ResourceIndexView(data, program.columns);
+    const view = new ResourceIndexView(data, program.opts().columns);
     view.render();
   } catch (err) {
     resourceController.error(err);

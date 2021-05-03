@@ -13,7 +13,6 @@
 const Model = require('./model.js');
 const Config = require('./config.js');
 const Key = require('./key.js');
-const i18n = require('./i18n.js');
 const validator = require('validator');
 
 /**
@@ -37,14 +36,14 @@ class Domain extends Model {
     switch (field) {
       case 'url':
         if (typeof value === 'undefined' || value === '') {
-          return new Error(i18n.__('The url should not be be empty'));
+          return new Error('The url should not be be empty');
         }
         if (!validator.isURL(value)) {
           return new Error('This is not a valid domain url');
         }
         break;
       default:
-        return new Error(i18n.__(`No validation defined for field: ${field}`));
+        return new Error(`No validation defined for field: ${field}`);
     }
     return true;
   }
@@ -86,7 +85,7 @@ class Domain extends Model {
   __loadDefault() {
     const config = Config.get();
     if (config.domain.baseUrl === undefined) {
-      return new Error(i18n.__("Can not read domain url from file"));
+      return new Error('Can not read domain url from file');
     }
     this._url = config.domain.baseUrl;
     if (config.domain.publicKey !== undefined) {

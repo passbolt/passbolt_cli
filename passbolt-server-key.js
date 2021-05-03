@@ -10,13 +10,14 @@
  * @license       https://opensource.org/licenses/AGPL-3.0 AGPL License
  * @link          https://www.passbolt.com Passbolt(tm)
  */
-const program = require('commander');
+const {Command} = require('commander');
 const ServerKeyController = require('./app/controllers/serverKeyController.js');
 
 /**
  * Get and display the server public key
  */
 (async function() {
+  const program = new Command();
   program
     .usage('[options]', 'Get the server key')
     .option('--fingerprint', 'Display the fingerprint')

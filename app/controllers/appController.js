@@ -10,7 +10,6 @@
  * @license       https://opensource.org/licenses/AGPL-3.0 AGPL License
  * @link          https://www.passbolt.com Passbolt(tm)
  */
-const i18n = require('../models/i18n.js');
 const GpgAuthController = require('./gpgAuthController.js');
 const validate = require('validator');
 
@@ -28,7 +27,7 @@ class AppController extends GpgAuthController {
    * App controllers should not be instanciated without a name
    */
   getName() {
-    throw new Error(i18n.__('Error: no controller name set'));
+    throw new Error('Error: no controller name set');
   }
 
   /**
@@ -36,7 +35,7 @@ class AppController extends GpgAuthController {
    * @returns {Promise<*>}
    */
   async index() {
-    const url = `${this.URL_BASE}.json?api-version=v1`;
+    const url = `${this.URL_BASE}.json?api-version=v2`;
     const request  = {
       url,
       jar: this.cookieJar
@@ -58,11 +57,11 @@ class AppController extends GpgAuthController {
   async view(id, options) {
     // Check if this is a valid UUID
     if (!validate.isUUID(id)) {
-      this.error(i18n.__(`This is not a valid UUID: ${id}`));
+      this.error(`This is not a valid UUID: ${id}`);
     }
 
     // Get the record
-    let url = `${this.URL_BASE}/${id}.json?api-version=v1&`;
+    let url = `${this.URL_BASE}/${id}.json?api-version=v2&`;
     if (typeof options !== 'undefined') {
       url += options;
     }

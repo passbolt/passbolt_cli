@@ -14,8 +14,8 @@ const Config = require('./config');
 const Gpg = require('gpg');
 const XRegExp = require('xregexp');
 const jsSHA = require('jssha');
-const randomBytes = require('crypto').randomBytes;
-const StringDecoder = require('string_decoder').StringDecoder;
+const {randomBytes} = require('crypto');
+const {StringDecoder} = require('string_decoder');
 
 class Crypto {
   /**
@@ -75,7 +75,7 @@ class Crypto {
    * @returns {Promise}
    */
   static encrypt(recipient, msg) {
-    const promise = new Promise(((resolve, reject) => {
+    return new Promise(((resolve, reject) => {
       const p = {
         resolve,
         reject
@@ -90,37 +90,36 @@ class Crypto {
         }
       }
       Gpg.encrypt(msg, options, (error, buffer) => {
-        if (error != undefined) {
+        if (error) {
           return p.reject(error);
         }
         const decoder = new StringDecoder('utf8');
         return p.resolve(decoder.write(buffer));
       });
     }));
-    return promise;
   }
 
 
   /**
    * Decrypt a msg with a given key
    * @param msg string message to decrypt
+   * @param options
    * @returns {Promise}
    */
   static decrypt(msg, options) {
-    const promise = new Promise(((resolve, reject) => {
+    return new Promise(((resolve, reject) => {
       const p = {
         resolve,
         reject
       };
 
       Gpg.decrypt(msg, options, (error, decrypted) => {
-        if (error != undefined) {
+        if (error) {
           return p.reject(error);
         }
         return p.resolve(decrypted.toString('utf8'));
       });
     }));
-    return promise;
   }
 }
 

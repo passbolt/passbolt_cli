@@ -10,9 +10,10 @@
  * @license       https://opensource.org/licenses/AGPL-3.0 AGPL License
  * @link          https://www.passbolt.com Passbolt(tm)
  */
-const program = require('commander');
+const {Command} = require('commander');
 const pjson = require('./package.json');
 
+const program = new Command();
 program
   .version(pjson.version)
   .command('auth', 'Authentication actions, login or logout')

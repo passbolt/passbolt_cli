@@ -10,13 +10,14 @@
  * @license       https://opensource.org/licenses/AGPL-3.0 AGPL License
  * @link          https://www.passbolt.com Passbolt(tm)
  */
-const program = require('commander');
+const {Command} = require('commander');
 const GpgAuthController = require('./app/controllers/gpgAuthController.js');
 
 /**
  * Passbolt GPG Authentication Command
  */
 (async function() {
+  const program = new Command();
   program
     .usage('[options] [login|logout]', 'Authentication actions, login or logout')
     .option('-u, --fingerprint <fingerprint>', 'The user key fingerprint to authenticate with')

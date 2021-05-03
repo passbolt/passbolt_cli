@@ -10,7 +10,7 @@
  * @license       https://opensource.org/licenses/AGPL-3.0 AGPL License
  * @link          https://www.passbolt.com Passbolt(tm)
  */
-const program = require('commander');
+const {Command} = require('commander');
 const ResourceController = require('./app/controllers/resourceController.js');
 const GetView = require('./app/views/resources/get.js');
 
@@ -18,6 +18,7 @@ const GetView = require('./app/views/resources/get.js');
  * Get Secret
  */
 (async function () {
+  const program = new Command();
   program
     .usage('[options] <uuid>', 'Display the OpenPGP block a given secret')
     .option('-u, --fingerprint <fingerprint>', 'The user key fingerprint to authenticate with')

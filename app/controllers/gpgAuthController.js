@@ -16,7 +16,6 @@ const CookieStore = require('tough-cookie-file-store');
 const Crypto = require('../models/crypto.js');
 const GpgAuthToken = require('../models/gpgAuthToken.js');
 const GpgAuthHeader = require('../models/gpgAuthHeader.js');
-const i18n = require('../models/i18n.js');
 const path = require('path');
 const User = require('../models/user.js');
 
@@ -44,7 +43,7 @@ class GpgAuthController extends MfaController {
     // URLs
     const baseUrl = `${this.domain.url}/auth`;
     this.URL_VERIFY = `${baseUrl}/verify.json`;
-    this.URL_CHECKSESSION = `${baseUrl}/checkSession.json`;
+    this.URL_CHECKSESSION = `${baseUrl}/is-authenticated.json`;
     this.URL_LOGIN = `${baseUrl}/login.json`;
     this.URL_LOGOUT = `${baseUrl}/logout`;
 
@@ -132,12 +131,12 @@ class GpgAuthController extends MfaController {
 
   async getCsrfToken() {
     return new Promise((resolve, reject) => {
-      const domain = new URL(this.domain.url).host;
+      const domain = new URL(this.domain.url).hostname;
       const path = '/';
       const key = 'csrfToken';
 
       this.cookieStore.findCookie(domain, path, key, (error, cookie) => {
-        if (cookie === null) {
+        if (!cookie) {
           reject();
         } else {
           resolve(cookie.value);
@@ -268,13 +267,14 @@ class GpgAuthController extends MfaController {
   _serverResponseHealthCheck(step, response) {
     // Check if the HTTP status is OK
     if (response.statusCode !== 200) {
-      throw new Error(`${i18n.__('There was a problem when trying to communicate with the server')
-      } (HTTP Code:${response.status})`);
+      throw new Error(`There was a problem when trying to communicate with the server (HTTP Code:${response.status})`);
     }
 
     // Check if there is GPGAuth error flagged by the server
-    if (response.headers['x-gpgauth-error']) {
-      throw new Error(i18n.__('The server rejected the verification request.') + response.headers['x-gpgauth-debug']);
+    if (step !== 'logout') {
+      if (response.headers['x-gpgauth-error']) {
+        throw new Error(`The server rejected the verification request ${response.headers['x-gpgauth-debug']}`);
+      }
     }
 
     // Check if the headers are correct
@@ -282,7 +282,7 @@ class GpgAuthController extends MfaController {
       GpgAuthHeader.validateByStage(step, response.headers);
     } catch (error) {
       this.log(error.message, 'verbose');
-      throw new Error(i18n.__('The server was unable to respect the authentication protocol.'));
+      throw new Error('The server was unable to respect the authentication protocol.');
     }
 
     return true;
@@ -302,11 +302,11 @@ class GpgAuthController extends MfaController {
       GpgAuthToken.validate('token', token);
     } catch (error) {
       console.log(error.message, 'verbose');
-      throw new Error(i18n.__('Error: GPGAuth verify step failed. Maybe your user does not exist or have been deleted.'));
+      throw new Error('Error: GPGAuth verify step failed. Maybe your user does not exist or have been deleted.');
     }
 
     if (!this.token || token !== this.token) {
-      throw new Error(i18n.__('Error: The server was unable to identify. GPGAuth tokens do not match.'));
+      throw new Error('Error: The server was unable to identify. GPGAuth tokens do not match.');
     }
     return response;
   }
@@ -371,7 +371,7 @@ class GpgAuthController extends MfaController {
       body = JSON.parse(response.body);
     } catch (syntaxError) {
       this.log(response.body.toString(), 'verbose');
-      this.error(`${i18n.__('Error')} ${response.statusCode} ${i18n.__('could not parse server response.')}`);
+      this.error(`Error ${response.statusCode} could not parse server response.`);
       return;
     }
     return body;

@@ -10,20 +10,21 @@
  * @license       https://opensource.org/licenses/AGPL-3.0 AGPL License
  * @link          https://www.passbolt.com Passbolt(tm)
  */
-const program = require('commander');
+const {Command} = require('commander');
 const UserController = require('./app/controllers/userController.js');
 const UserIndexView = require('./app/views/users/index.js');
-const Coercion = require('./app/lib/coercion');
+const {list} = require('./app/lib/coercion');
 
 /**
  * User list
  */
 (async function () {
+  const program = new Command();
   program
     .usage('[options]', 'Get the list of users')
     .option('-u, --fingerprint <fingerprint>', 'The user key fingerprint to authenticate with')
     .option('-p, --passphrase <passphrase>', 'The key passphrase')
-    .option('--columns <items>', 'Coma separated columns to display', Coercion.list)
+    .option('--columns <items>', 'Coma separated columns to display', list)
     .option('-v, --verbose', 'Display additional debug information')
     .parse(process.argv);
 
@@ -31,7 +32,7 @@ const Coercion = require('./app/lib/coercion');
   await userController.loginIfNeeded();
   try {
     const data = await userController.index();
-    const view = new UserIndexView(data, program.columns);
+    const view = new UserIndexView(data, program.opts().columns);
     view.render();
   } catch (err) {
     userController.error(err);

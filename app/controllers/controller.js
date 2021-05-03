@@ -10,7 +10,6 @@
  * @license       https://opensource.org/licenses/AGPL-3.0 AGPL License
  * @link          https://www.passbolt.com Passbolt(tm)
  */
-const i18n = require('../models/i18n.js');
 const Config = require('../models/config.js');
 
 class Controller {
@@ -20,7 +19,7 @@ class Controller {
    */
   constructor(program) {
     this._request = require('request');
-    this._verbose = (program !== undefined && program.verbose !== undefined && program.verbose);
+    this._verbose = (program && program.opts() && program.opts().verbose);
     const config = Config.get();
     this._agentOptions = config.agentOptions;
   }
@@ -53,11 +52,11 @@ class Controller {
           resolve(result);
         })
         .on('error', () => {
-          const err = new Error(i18n.__('Error: could not connect to ') + options.url);
+          const err = new Error(`Error: could not connect to ${options.url}`);
           reject(err);
         });
       } catch (error) {
-        const err = new Error(i18n.__('Error: could not connect to ') + options.url);
+        const err = new Error(`Error: could not connect to ${options.url}`);
         reject(err);
       }
     });
@@ -91,11 +90,11 @@ class Controller {
           resolve(result);
         })
         .on('error', () => {
-          const err = new Error(i18n.__('Error: could not connect to ') + options.url);
+          const err = new Error(`Error: could not connect to ${options.url}`);
           reject(err);
         });
       } catch (error) {
-        const err = new Error(i18n.__('Error: could not connect to ') + options.url);
+        const err = new Error(`Error: could not connect to ${options.url}`);
         reject(err);
       }
     });
@@ -119,6 +118,9 @@ class Controller {
   error(error) {
     if (error instanceof Error) {
       this.log(error.message);
+      if (this._verbose) {
+        this.log(error);
+      }
     } else if (typeof error === 'string') {
       this.log(error);
     } else {
@@ -140,7 +142,7 @@ class Controller {
       body = JSON.parse(response.body);
     } catch (syntaxError) {
       this.log(response.body.toString(), 'verbose');
-      this.error(`${i18n.__('Error')} ${response.statusCode} ${i18n.__('could not parse server response.')}`);
+      this.error(`'Error ${response.statusCode} could not parse server response.`);
       return;
     }
     return body;

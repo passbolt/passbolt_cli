@@ -13,7 +13,6 @@
 const Model = require('./model.js');
 const Key = require('./key.js');
 const Config = require('./config.js');
-const i18n = require('./i18n.js');
 
 /**
  * The class that deals with users.
@@ -56,7 +55,7 @@ class User extends Model {
     }
 
     if (!config || !config.user || !config.user.privateKey) {
-      return new Error(i18n.__("Can not read user key from file"));
+      return new Error("Can not read user key from file");
     }
     this._key = new Key(config.user.privateKey);
     return true;

@@ -11,7 +11,6 @@
  * @link          https://www.passbolt.com Passbolt(tm)
  */
 const Model = require('./model.js');
-const i18n = require('./i18n.js');
 const Crypto = require('../models/crypto.js');
 const validator = require('validator');
 
@@ -55,24 +54,24 @@ class GpgAuthToken extends Model {
     switch (field) {
       case 'token' :
         if (typeof value === 'undefined' || value === '') {
-          return new Error(i18n.__('The user authentication token cannot be empty'));
+          return new Error('The user authentication token cannot be empty');
         }
         sections = value.split('|');
         if (sections.length !== 4) {
-          return new Error(i18n.__('The user authentication token is not in the right format'));
+          return new Error('The user authentication token is not in the right format');
         }
         if (sections[0] !== sections[3] && sections[0] !== 'gpgauthv1.3.0') {
-          return new Error(i18n.__('Passbolt does not support this GPGAuth version'));
+          return new Error('Passbolt does not support this GPGAuth version');
         }
         if (sections[1] !== '36') {
-          return new Error(i18n.__(`Passbolt does not support GPGAuth token nonce longer than 36 characters: ${sections[2]}`));
+          return new Error(`Passbolt does not support GPGAuth token nonce longer than 36 characters: ${sections[2]}`);
         }
         if (!validator.isUUID(sections[2])) {
-          return new Error(i18n.__('Passbolt does not support GPGAuth token nonce that are not UUIDs'));
+          return new Error('Passbolt does not support GPGAuth token nonce that are not UUIDs');
         }
         return true;
       default :
-        return new Error(i18n.__(`No validation defined for field: ${field}`));
+        return new Error(`No validation defined for field: ${field}`);
     }
   }
 }

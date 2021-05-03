@@ -13,7 +13,6 @@
 const CliController = require('./cliController.js');
 const Domain = require('../models/domain.js');
 const Config = require('../models/config.js');
-const i18n = require('../models/i18n.js');
 
 class MfaController extends CliController {
   /**
@@ -76,7 +75,7 @@ class MfaController extends CliController {
 
     if (response.statusCode !== 200) {
       this.log(JSON.parse(response.body), 'verbose');
-      const msg = `${i18n.__('There was a problem with MFA authentication.')} (HTTP Code:${response.statusCode})\n`;
+      const msg = `There was a problem with MFA authentication. (HTTP Code:${response.statusCode})`;
       this.error(msg);
     }
   }
@@ -102,7 +101,8 @@ class MfaController extends CliController {
       }
     }
     if (!provider) {
-      const msg = i18n.__('No supported MFA provider found in config. Please setup an additional provider using passbolt web client.');
+      const msg = 'No supported MFA provider found in config.' +
+        ' Please setup an additional provider using passbolt web client.';
       throw new Error(msg);
     }
     return provider;
@@ -121,11 +121,11 @@ class MfaController extends CliController {
     } else {
       userProviders = config.mfa.providers;
       if (!Array.isArray(userProviders) || userProviders.length === 0) {
-        const msg = i18n.__('No supported MFA provider found in user config. Please setup MFA provider preferences.');
+        const msg = 'No supported MFA provider found in user config. Please setup MFA provider preferences.';
         this.error(msg);
       }
       if (userProviders.length === 1 && userProviders[0].toLowerCase() === 'duo') {
-        const msg = i18n.__('Duo is not a supported MFA provider. Please edit MFA provider preferences to include more providers.');
+        const msg ='Duo is not a supported MFA provider. Please edit MFA provider preferences to include more providers.';
         this.error(msg);
       }
       for (let i = 0; i < userProviders.length; i++) {
@@ -150,7 +150,7 @@ class MfaController extends CliController {
         url = this.URL_MFA_VERIFY_TOTP;
         break;
       default:
-        this.error(i18n.__(`MFA provider not supported: ${this.provider}`));
+        this.error(`MFA provider not supported: ${this.provider}`);
     }
     return url;
   }
@@ -171,7 +171,7 @@ class MfaController extends CliController {
         data = {'totp': otp};
         break;
       default:
-        this.error(i18n.__(`MFA provider not supported: ${this.provider}`));
+        this.error(`MFA provider not supported: ${this.provider}`);
     }
     return data;
   }
@@ -203,9 +203,9 @@ class MfaController extends CliController {
     const input = await this.prompt({
       properties: {
         otp: {
-          description: i18n.__('Please enter the one time password displayed on your tablet or phone.\notp'),
+          description: 'Please enter the one time password displayed on your tablet or phone.\notp',
           pattern: /^[0-9]{6}$/,
-          message: i18n.__('One time password must be a six digit number.'),
+          message: 'One time password must be a six digit number.',
           required: true
         }
       }
@@ -222,9 +222,9 @@ class MfaController extends CliController {
     const input = await this.prompt({
       properties: {
         otp: {
-          description: i18n.__('Plug in your yubikey and put your finger on it.\notp'),
+          description: 'Plug in your yubikey and put your finger on it.\notp',
           pattern: /^[cbdefghijklnrtuv]{44}$/,
-          message: i18n.__('Yubikey OTP must be a ModHex compatible 44 characters in length string.'),
+          message: 'Yubikey OTP must be a ModHex compatible 44 characters in length string.',
           required: true,
           hidden: true
         }

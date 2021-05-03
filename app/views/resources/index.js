@@ -33,12 +33,12 @@ class ResourceIndexView extends AppView {
     for (;i < max; i++) {
       r = data.body[i];
       this.data[i] = {
-        'name': r.Resource.name,
-        'username': r.Resource.username,
-        'uri': r.Resource.uri,
-        'created': r.Resource.created,
-        'modified': r.Resource.modified,
-        'uuid': r.Resource.id
+        'name': r.name,
+        'username': r.username,
+        'uri': r.uri,
+        'created': r.created,
+        'modified': r.modified,
+        'uuid': r.id
       };
     }
   }

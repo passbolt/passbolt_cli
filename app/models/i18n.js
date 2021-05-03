@@ -10,10 +10,10 @@
  * @license       https://opensource.org/licenses/AGPL-3.0 AGPL License
  * @link          https://www.passbolt.com Passbolt(tm)
  */
-const y18n = require('y18n');
 // todo get i18n user pref
-const i18n = new y18n({
+const {y18n} = require('y18n')({
   directory: './app/locales',
   updateFiles: false
 });
-module.exports = i18n;
+
+module.exports = y18n;

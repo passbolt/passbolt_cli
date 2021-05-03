@@ -10,8 +10,6 @@
  * @license       https://opensource.org/licenses/AGPL-3.0 AGPL License
  * @link          https://www.passbolt.com Passbolt(tm)
  */
-const i18n = require('./i18n.js');
-
 class Model {
   /**
    * Validate user fields individually
@@ -21,7 +19,7 @@ class Model {
    * @returns {Error|boolean}
    */
   static validate(field, value) {
-    return new Error(i18n.__(`No validation defined for field: ${field}: ${value}`));
+    return new Error(`No validation defined for field: ${field}: ${value}`);
   }
 }
 

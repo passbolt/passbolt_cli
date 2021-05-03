@@ -10,7 +10,7 @@
  * @license       https://opensource.org/licenses/AGPL-3.0 AGPL License
  * @link          https://www.passbolt.com Passbolt(tm)
  */
-const program = require('commander');
+const {Command} = require('commander');
 const UserController = require('./app/controllers/userController.js');
 const UserGetView = require('./app/views/users/get.js');
 
@@ -18,6 +18,7 @@ const UserGetView = require('./app/views/users/get.js');
  * User get
  */
 (async function () {
+  const program = new Command();
   program
     .usage('[options] <uuid>', 'Display the info for a given user')
     .option('-u, --fingerprint <fingerprint>', 'The user key fingerprint to authenticate with')

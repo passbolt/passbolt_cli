@@ -11,7 +11,6 @@
  * @link          https://www.passbolt.com Passbolt(tm)
  */
 const Model = require('./model.js');
-const i18n = require('./i18n.js');
 
 /**
  * Domain model constructor
@@ -35,7 +34,7 @@ class Key extends Model {
       case 'fingerprint':
         break;
       default:
-        return new Error(i18n.__(`No validation defined for field: ${field}`));
+        return new Error(`No validation defined for field: ${field}`);
     }
     return true;
   }
