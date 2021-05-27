@@ -11,6 +11,7 @@
  * @link          https://www.passbolt.com Passbolt(tm)
  */
 const fs = require('fs');
+const os = require('os');
 const _path = require('path');
 
 /**
@@ -23,14 +24,20 @@ class Config {
    * @returns {*}
    */
   static get(file, path) {
-    if (file === undefined) {
-      file = '/app/config/config.json';
-    }
     if (path === undefined) {
-      file = _path.dirname(require.main.filename) + file;
-    } else {
-      file = path + file;
+      path = _path.dirname(require.main.filename);
     }
+
+    if (file === undefined) {
+      const home = os.homedir();
+
+      if (fs.existsSync(home + '/.config/passbolt/config.json')) {
+        file = home + '/.config/passbolt/config.json';
+      } else {
+        file = path + '/app/config/config.json'
+      }
+    }
+
     if (!fs.existsSync(file)) {
       return Error(`Config file not found! [${file}]`);
     }
