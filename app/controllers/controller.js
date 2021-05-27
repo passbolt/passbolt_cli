@@ -89,7 +89,8 @@ class Controller {
         .on('end', () => {
           resolve(result);
         })
-        .on('error', () => {
+        .on('error', (e) => {
+          this.log(e, 'verbose');
           const err = new Error(`Error: could not connect to ${options.url}`);
           reject(err);
         });

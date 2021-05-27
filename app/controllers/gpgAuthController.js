@@ -45,7 +45,7 @@ class GpgAuthController extends MfaController {
     this.URL_VERIFY = `${baseUrl}/verify.json`;
     this.URL_CHECKSESSION = `${baseUrl}/is-authenticated.json`;
     this.URL_LOGIN = `${baseUrl}/login.json`;
-    this.URL_LOGOUT = `${baseUrl}/logout`;
+    this.URL_LOGOUT = `${baseUrl}/logout.json`;
 
     // Session cookie
     this.COOKIE_FILE = `${this.appDir}/app/tmp/cookie.json`;
@@ -176,16 +176,16 @@ class GpgAuthController extends MfaController {
    */
   async logout() {
     try {
+      this._clearCookie();
       const response = await this.get({
         url: this.URL_LOGOUT,
         jar: this.cookieJar
       });
       this._serverResponseHealthCheck('logout', response);
-      this._clearCookie();
       return true;
     } catch (error) {
-      this.error(error);
-      return false;
+      this.log(error, 'verbose');
+      return true;
     }
   }
 
@@ -225,25 +225,24 @@ class GpgAuthController extends MfaController {
    */
   _parseProgramArg(program) {
     if (!program) {
+      console.log('no program');
       return;
     }
-
-    if (program.fingerprint) {
+    if (program.opts().fingerprint) {
       this.user = new User({
         privateKey: {
-          fingerprint: program.fingerprint
+          fingerprint: program.opts().fingerprint
         }
       });
     } else {
       this.user = new User();
     }
 
-    if (program.passphrase) {
+    if (program.opts().passphrase) {
       // if no passphrase is given but is needed
       // a gpg prompt will be triggered by gpg itself
-      this.passphrase = program.passphrase;
+      this.passphrase = program.opts().passphrase;
     }
-
     this.force = program.force || false;
   }
 
@@ -329,7 +328,10 @@ class GpgAuthController extends MfaController {
     const encryptedAuthToken = Compat.stripslashes(Compat.urldecode(response.headers['x-gpgauth-user-auth-token']));
     let options;
     if (this.passphrase !== undefined) {
-      options = ['--passphrase', this.passphrase];
+      options = [
+        '--pinentry-mode', 'loopback',
+        '--passphrase', this.passphrase
+      ];
     }
     const userAuthToken = await Crypto.decrypt(encryptedAuthToken, options);
     GpgAuthToken.validate('token', userAuthToken);
