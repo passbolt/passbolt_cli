@@ -177,7 +177,7 @@ and your passphrase if you have one.
 Optionally you can provide your passphrase if you do not want gnupg handle the pinentry.
 Please note that this obviously less safe.
 ```
-$ passbolt auth login --password=ada@passbolt.com
+$ passbolt auth login --passphrase='<passphrase>'
 
 GPGAuth Skipping, you are already logged in
 ```
