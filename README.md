@@ -174,7 +174,7 @@ Right now the basics, only authentication and read operations.
 Authentication is based on [GPGAuth](https://www.passbolt.com/help/tech/auth), so it uses your private key
 and your passphrase if you have one.
 
-Optionally uou can provide your passphrase if you do not want gnupg handle the pinentry.
+Optionally you can provide your passphrase if you do not want gnupg handle the pinentry.
 Please note that this obviously less safe.
 ```
 $ passbolt auth login --password=ada@passbolt.com
