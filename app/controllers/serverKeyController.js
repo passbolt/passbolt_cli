@@ -25,8 +25,10 @@ class ServerKeyController extends CliController {
       // config loading failed, still try to proceed
       // maybe program.domain is set and valid
     }
-    if (program.domain) {
-      this.domain = new Domain(program.domain);
+    
+    const options = program.opts();
+    if (options.domain) {
+      this.domain = new Domain(options.domain);
       if (program.skipCertificateValidation) {
         this._agentOptions = {rejectUnauthorized: false};
       }
