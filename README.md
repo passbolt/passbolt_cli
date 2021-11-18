@@ -62,7 +62,7 @@ Make the symlink on our path point to the index.js
 
 Create or copy a configuration file with a user and a server config
 ```
-cd app/config
+mkdir ~/.config/passbolt
 cp config.default.json config.json
 ```
 
@@ -76,8 +76,7 @@ You also need to make sure the server public key is in your GnuPG keyring.
 
 If you do not know the domain public key or fingerprint you can get them like follow
 ```
-$ passbolt server-key --domain=https://www.passbolt.test > app/config/server.key
-$ gpg --import app/config/server.key
+$ passbolt server-key --domain=https://www.passbolt.test | gpg --import
 $ passbolt server-key --fingerprint --domain=https://www.passbolt.test
 ```
 

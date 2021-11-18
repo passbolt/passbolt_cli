@@ -1,6 +1,6 @@
 {
   "name": "passbolt_cli",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "description": "A command line client for passbolt",
   "main": "index.js",
   "scripts": {

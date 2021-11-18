@@ -27,10 +27,6 @@ const ServerKeyController = require('./app/controllers/serverKeyController.js');
     .option('-v, --verbose', 'Display additional debug information')
     .parse(process.argv);
 
-  if (!program.fingerprint && !program.armoredKey) {
-    program.armoredKey = true;
-  }
-
   let serverKeyController;
   try {
     serverKeyController = new ServerKeyController(program, process.argv);
@@ -47,10 +43,11 @@ const ServerKeyController = require('./app/controllers/serverKeyController.js');
     process.exit(1);
   }
 
-  if (program.fingerprint) {
+  const {fingerprint, armoredKey} = program.opts();
+  if (fingerprint) {
     console.log(response.body.fingerprint);
   }
-  if (program.armoredKey) {
+  if (armoredKey || (!fingerprint && !armoredKey)) {
       console.log(response.body.keydata);
   }
 })();

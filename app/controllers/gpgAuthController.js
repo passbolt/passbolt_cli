@@ -228,22 +228,24 @@ class GpgAuthController extends MfaController {
       console.log('no program');
       return;
     }
-    if (program.opts().fingerprint) {
+    const {fingerprint, passphrase, force} = program.opts();
+
+    if (fingerprint) {
       this.user = new User({
         privateKey: {
-          fingerprint: program.opts().fingerprint
+          fingerprint: fingerprint
         }
       });
     } else {
       this.user = new User();
     }
 
-    if (program.opts().passphrase) {
+    if (passphrase) {
       // if no passphrase is given but is needed
       // a gpg prompt will be triggered by gpg itself
-      this.passphrase = program.opts().passphrase;
+      this.passphrase = passphrase;
     }
-    this.force = program.force || false;
+    this.force = force || false;
   }
 
   /**

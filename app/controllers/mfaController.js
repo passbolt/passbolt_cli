@@ -21,8 +21,9 @@ class MfaController extends CliController {
    */
   constructor(program) {
     super(program);
-    if (program.domain) {
-      this.domain = program.domain;
+    const { domain } = program.opts();
+    if (domain) {
+      this.domain = domain;
     } else {
       this.domain = new Domain();
     }
