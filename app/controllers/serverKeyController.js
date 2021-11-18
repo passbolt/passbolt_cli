@@ -26,10 +26,10 @@ class ServerKeyController extends CliController {
       // maybe program.domain is set and valid
     }
     
-    const { domain } = program.opts();
+    const { domain, skipCertificateValidation } = program.opts();
     if (domain) {
       this.domain = new Domain(domain);
-      if (program.skipCertificateValidation) {
+      if (skipCertificateValidation) {
         this._agentOptions = {rejectUnauthorized: false};
       }
     } else {

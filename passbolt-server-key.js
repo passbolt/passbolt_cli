@@ -36,6 +36,7 @@ const ServerKeyController = require('./app/controllers/serverKeyController.js');
     serverKeyController = new ServerKeyController(program, process.argv);
   } catch (error) {
     console.error('Could not fetch server key. Please provide a domain in app/config/config.json or using --domain.');
+    console.error(error.message);
     process.exit(1);
   }
   let response;

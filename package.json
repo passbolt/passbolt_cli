@@ -1,6 +1,6 @@
 {
   "name": "passbolt_cli",
-  "version": "0.6.1",
+  "version": "0.7.0",
   "description": "A command line client for passbolt",
   "main": "index.js",
   "scripts": {
@@ -30,10 +30,10 @@
     "prompt": "^1.1.0",
     "request": "^2.88.0",
     "tough-cookie-file-store": "^1.2.0",
-    "validator": "^13.6.0",
-    "xregexp": "^5.0.2"
+    "validator": "^13.7.0",
+    "xregexp": "^5.1.0"
   },
   "devDependencies": {
-    "eslint": "^6.8.0"
+    "eslint": "^8.2.0"
   }
 }
