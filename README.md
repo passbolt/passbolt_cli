@@ -63,7 +63,7 @@ Make the symlink on our path point to the index.js
 Create or copy a configuration file with a user and a server config
 ```
 mkdir ~/.config/passbolt
-cp config.default.json config.json
+cp app/config/config.default.json ~/.config/passbolt/config.json
 ```
 
 Open the newly created config file and set the details.

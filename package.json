@@ -1,6 +1,6 @@
 {
   "name": "passbolt_cli",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "A command line client for passbolt",
   "main": "index.js",
   "scripts": {
@@ -24,7 +24,7 @@
   "license": "AGPL-3.0",
   "dependencies": {
     "columnify": "^1.5.4",
-    "commander": "^7.2.0",
+    "commander": "^8.3.0",
     "gpg": "^0.6.0",
     "jssha": "^3.2.0",
     "prompt": "^1.1.0",
