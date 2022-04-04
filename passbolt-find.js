@@ -25,6 +25,7 @@ const {list} = require('./app/lib/coercion');
     .option('-u, --fingerprint <fingerprint>', 'The user key fingerprint to authenticate with')
     .option('-p, --passphrase <passphrase>', 'The key passphrase')
     .option('--columns <items>', 'Coma separated columns to display', list)
+    .option('--json', 'Output resources in JSON format')
     .option('-v, --verbose', 'Display additional debug information')
     .parse(process.argv);
 
@@ -33,7 +34,7 @@ const {list} = require('./app/lib/coercion');
   try {
     let data = await resourceController.index();
     const view = new ResourceIndexView(data, program.opts().columns);
-    view.render();
+    view.render(program.opts().json ? 'json' : null);
   } catch (err) {
     resourceController.error(err);
   }
