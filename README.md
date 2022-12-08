@@ -29,8 +29,9 @@ see [GNU Affero General Public License v3](http://www.gnu.org/licenses/agpl-3.0.
 
 # What is the purpose of this repository
 
-This repository is a command line interface for passbolt API.
-It allows a user to interact with the passbolt server without the user of web extension.
+This repository is a command line interface for [passbolt API](https://github.com/passbolt/passbolt_api).
+It allows a user to interact with the passbolt server without the use of [web extension](https://github.com/passbolt/passbolt_browser_extension).
+
 Currently works as a read only access only.
 
 # Prerequisite
