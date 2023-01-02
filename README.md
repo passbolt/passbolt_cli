@@ -203,9 +203,15 @@ free software foundation europe fsfe                 https://fsfe.org/index.en.h
 ftp                             user                 ftp://192.168.1.1                       2016-05-15 16:04:49  4a2f98e8-b326-3384-aa2b-c3c9a81be3f7
 ...
 ```
-Your can select the columns you want to display using the `--columns` arguments.
-Non existing collumns will be ignored.
 
+You can specify the output format by using the `-o` or `--output` argument and
+set it to either `columns` (default), `json` or `yaml`.
+```
+$ passbolt find --output json
+```
+
+You can select the columns you want to display using the `--columns` arguments.
+Non existing columns will be ignored.
 ```
 $ passbolt find --columns=name,uuid
 ```

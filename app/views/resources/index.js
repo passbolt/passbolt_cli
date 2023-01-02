@@ -11,15 +11,22 @@
  * @link          https://www.passbolt.com Passbolt(tm)
  */
 const AppView = require('../appView.js');
+const yaml = require('js-yaml');
 
 /**
  * Resource Index View
  */
 class ResourceIndexView extends AppView {
-  constructor(data, columns) {
+  constructor(data, output, columns) {
     super();
     this.data = [];
+    this.defaultOutput = 'columns';
     this.defaultColumns = ['name', 'username', 'uri', 'modified', 'uuid'];
+    if (output == null) {
+      this.output = this.defaultOutput;
+    } else {
+      this.output = output;
+    }
     if (Array.isArray(columns) && columns.length) {
       this.columns = columns.filter(value => this.defaultColumns.includes(value));
     } else {
@@ -44,16 +51,28 @@ class ResourceIndexView extends AppView {
   }
 
   render() {
-    if (this.data.length === 0) {
-      console.log('No resources to display. Create one first!');
-    } else {
-      console.log(this.columnify(this.data, {
-        minWidth: 20,
-        columns: this.columns,
-        config: {
-          'username': {maxWidth: 64}
-        }
-      }));
+    if (this.output === 'json') {
+      console.log(JSON.stringify(this.data, null, 2));
+    }
+    else if (this.output === 'yaml') {
+      console.log(yaml.dump(this.data));
+    }
+    else if (this.output === 'columns') {
+      if (this.data.length === 0) {
+        console.log('No resources to display. Create one first!');
+      }
+      else {
+        console.log(this.columnify(this.data, {
+          minWidth: 20,
+          columns: this.columns,
+          config: {
+            'username': {maxWidth: 64}
+          }
+        }));
+      }
+    }
+    else {
+      console.log('Output format is unknown.');
     }
   }
 }

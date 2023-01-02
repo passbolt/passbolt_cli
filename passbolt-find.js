@@ -24,6 +24,7 @@ const {list} = require('./app/lib/coercion');
     .usage('[options]', 'Search and list resources')
     .option('-u, --fingerprint <fingerprint>', 'The user key fingerprint to authenticate with')
     .option('-p, --passphrase <passphrase>', 'The key passphrase')
+    .option('-o, --output <output>', 'The output format. One of: (columns,json,yaml)')
     .option('--columns <items>', 'Coma separated columns to display', list)
     .option('-v, --verbose', 'Display additional debug information')
     .parse(process.argv);
@@ -32,7 +33,7 @@ const {list} = require('./app/lib/coercion');
   await resourceController.loginIfNeeded();
   try {
     let data = await resourceController.index();
-    const view = new ResourceIndexView(data, program.opts().columns);
+    const view = new ResourceIndexView(data, program.opts().output, program.opts().columns);
     view.render();
   } catch (err) {
     resourceController.error(err);
