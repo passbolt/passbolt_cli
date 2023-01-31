@@ -43,9 +43,11 @@ class ResourceIndexView extends AppView {
     }
   }
 
-  render() {
+  render(format = null) {
     if (this.data.length === 0) {
       console.log('No resources to display. Create one first!');
+    } else if (format == 'json') {
+        console.log(JSON.stringify(this.data));
     } else {
       console.log(this.columnify(this.data, {
         minWidth: 20,
