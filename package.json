@@ -29,7 +29,7 @@
     "jssha": "^3.2.0",
     "prompt": "^1.1.0",
     "request": "^2.88.0",
-    "tough-cookie-file-store": "^1.2.0",
+    "tough-cookie-file-store": "^2.0.0",
     "validator": "^13.7.0",
     "xregexp": "^5.1.0"
   },
