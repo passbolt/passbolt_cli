@@ -1,3 +1,6 @@
+NOTE: THIS REPOSITORY IS ARCHIVED. Check out https://github.com/passbolt/go-passbolt-cli
+
+
 
 	      ____                  __          ____
 	     / __ \____  _____ ____/ /_  ____  / / /_
