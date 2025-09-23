@@ -10,6 +10,8 @@
  * @license       https://opensource.org/licenses/AGPL-3.0 AGPL License
  * @link          https://www.passbolt.com Passbolt(tm)
  */
+const fs = require('fs');
+const os = require('os');
 const MfaController = require('./mfaController.js');
 const Compat = require('../lib/phpjs.js');
 const CookieStore = require('tough-cookie-file-store');
@@ -49,6 +51,11 @@ class GpgAuthController extends MfaController {
 
     // Session cookie
     this.COOKIE_FILE = `${this.appDir}/app/tmp/cookie.json`;
+    if (!fs.existsSync(this.COOKIE_FILE)) {
+      this.COOKIE_FILE = `${os.homedir()}/.local/share/passbolt/cookie.json`;
+
+      fs.mkdirSync(`${os.homedir()}/.local/share/passbolt/`);
+    }
     this.cookieStore = new CookieStore(this.COOKIE_FILE);
     this.cookieJar = this._request.jar(this.cookieStore);
     this._request.defaults({jar: this.cookieJar});
